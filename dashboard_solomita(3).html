@@ -1,0 +1,2450 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studio Solomita — Sistema Operativo Integrato 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1e2d3d;
+  --ink-light: #3a5068;
+  --paper: #f0f5fa;
+  --paper-dark: #dde8f0;
+  --accent: #2563a8;
+  --accent-light: #4a8fd4;
+  --accent2: #1a8a6f;
+  --gold: #b07a20;
+  --red: #c0392b;
+  --green: #1a7a50;
+  --border: #c2d4e4;
+  --sidebar-w: 270px;
+  --white: #ffffff;
+  --blue-soft: #e8f1fa;
+  --blue-mid: #cddff2;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  display: flex;
+  min-height: 100vh;
+  font-size: 14px;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--ink);
+  color: #c8dae8;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  overflow-y: auto;
+}
+.sidebar-logo {
+  padding: 26px 20px 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  background: linear-gradient(135deg, #1e2d3d 0%, #243b52 100%);
+}
+.sidebar-logo h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 18px;
+  color: #fff;
+  letter-spacing: 0.2px;
+}
+.sidebar-logo span {
+  display: block;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #7ab3d4;
+  margin-top: 4px;
+}
+.nav-section { padding: 12px 0 2px; }
+.nav-section-title {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.3);
+  padding: 0 20px 7px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 20px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-left: 3px solid transparent;
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.65);
+}
+.nav-item:hover { background: rgba(255,255,255,0.07); color: #fff; }
+.nav-item.active { background: rgba(37,99,168,0.3); border-left-color: var(--accent-light); color: #fff; }
+.nav-icon { font-size: 13px; width: 17px; text-align: center; flex-shrink: 0; }
+
+/* ── MAIN ── */
+.main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+.topbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 1px 6px rgba(37,99,168,0.08);
+}
+.topbar h2 { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--ink); }
+.topbar-right { display: flex; gap: 8px; align-items: center; }
+.badge {
+  padding: 4px 11px;
+  border-radius: 20px;
+  font-size: 10.5px;
+  font-weight: 600;
+}
+.badge-red { background: #fde8e6; color: var(--red); }
+.badge-blue { background: var(--blue-soft); color: var(--accent); }
+.badge-gold { background: #fdf3e0; color: var(--gold); }
+.badge-green { background: #e3f5ec; color: var(--green); }
+.print-btn {
+  background: var(--blue-soft);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  padding: 5px 14px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.15s;
+  display: flex; align-items: center; gap: 6px;
+}
+.print-btn:hover { background: var(--accent); color: #fff; }
+.content { padding: 24px 28px; flex: 1; }
+
+/* ── PANELS ── */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ── SECTION TITLE ── */
+.section-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 17px;
+  margin-bottom: 14px;
+  color: var(--ink);
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--blue-mid);
+}
+
+/* ── STAT BOXES ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.stat-box {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 14px 12px;
+  position: relative;
+  overflow: hidden;
+}
+.stat-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 10px 10px 0 0;
+}
+.stat-box.teal::before { background: var(--accent2); }
+.stat-box.gold::before { background: var(--gold); }
+.stat-box.green::before { background: var(--green); }
+.stat-num {
+  font-family: 'DM Serif Display', serif;
+  font-size: 34px;
+  line-height: 1;
+  color: var(--ink);
+}
+.stat-label { font-size: 10.5px; color: #7a9ab8; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-progress { margin-top: 9px; height: 5px; background: var(--paper-dark); border-radius: 3px; overflow: hidden; }
+.stat-progress-bar { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.5s ease; }
+.stat-box.teal .stat-progress-bar { background: var(--accent2); }
+.stat-box.gold .stat-progress-bar { background: var(--gold); }
+.stat-box.green .stat-progress-bar { background: var(--green); }
+.stat-sub { font-size: 10.5px; color: #9ab5cb; margin-top: 4px; }
+
+/* ── CARDS GRID ── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.card-header {
+  padding: 12px 16px 10px;
+  border-bottom: 1px solid var(--paper-dark);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--blue-soft);
+}
+.card-icon { width: 32px; height: 32px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+.card-icon.blue { background: var(--blue-mid); }
+.card-icon.teal { background: #d1f0e8; }
+.card-icon.gold { background: #fdf3e0; }
+.card-icon.red { background: #fde8e6; }
+.card-title { font-weight: 600; font-size: 13px; color: var(--ink); }
+.card-subtitle { font-size: 11px; color: #7a9ab8; margin-top: 2px; }
+.card-body { padding: 12px 16px; }
+
+/* ── PROC STEPS ── */
+.proc-step {
+  display: flex;
+  gap: 10px;
+  padding: 7px 5px;
+  border-bottom: 1px solid var(--paper-dark);
+  align-items: flex-start;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background 0.1s;
+}
+.proc-step:last-child { border-bottom: none; }
+.proc-step:hover { background: #f0f7ff; }
+.proc-step.done .step-text { text-decoration: line-through; color: #aac5d8; }
+.proc-step.done .step-num { background: var(--green); }
+.step-num { width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; transition: background 0.2s; }
+.step-checkbox { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; margin-top: 3px; }
+.step-text { font-size: 12.5px; color: var(--ink-light); line-height: 1.5; flex: 1; }
+.step-text strong { color: var(--ink); font-weight: 600; }
+.step-tags { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 3px; }
+.step-tag { font-size: 10px; padding: 1px 6px; border-radius: 10px; background: var(--blue-soft); color: var(--accent); }
+.step-tag.alert { background: #fde8e6; color: var(--red); }
+.step-tag.ok { background: #e3f5ec; color: var(--green); }
+.step-tag.gold { background: #fdf3e0; color: var(--gold); }
+
+/* ── GLOBAL PROGRESS ── */
+.global-progress {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 18px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.global-progress-label { font-size: 12.5px; font-weight: 600; color: var(--ink); white-space: nowrap; }
+.global-progress-bar { flex: 1; height: 8px; background: var(--paper-dark); border-radius: 4px; overflow: hidden; }
+.global-progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-light)); border-radius: 4px; transition: width 0.5s ease; }
+.global-progress-pct { font-size: 14px; font-weight: 700; color: var(--accent); white-space: nowrap; min-width: 42px; text-align: right; }
+
+/* ── CHECKLIST ── */
+.checklist-section { background: var(--white); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
+.checklist-section-header { padding: 11px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; background: var(--blue-soft); transition: background 0.1s; }
+.checklist-section-header:hover { background: var(--blue-mid); }
+.checklist-section-title { font-weight: 600; font-size: 13px; color: var(--ink); }
+.chl-badge { font-size: 10px; padding: 2px 8px; border-radius: 12px; background: var(--paper-dark); color: var(--ink-light); font-weight: 600; margin-right: 6px; transition: all 0.2s; }
+.chl-badge.done { background: #e3f5ec; color: var(--green); }
+.chevron { transition: transform 0.2s; font-size: 11px; color: #7a9ab8; }
+.chevron.open { transform: rotate(90deg); }
+.checklist-body { padding: 6px 14px 10px; }
+.checklist-item { display: flex; align-items: flex-start; gap: 9px; padding: 6px 5px; border-radius: 5px; cursor: pointer; transition: background 0.1s; }
+.checklist-item:hover { background: #f0f7ff; }
+.checklist-item input[type=checkbox] { width: 14px; height: 14px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; margin-top: 3px; }
+.checklist-item-text { font-size: 12.5px; color: var(--ink-light); line-height: 1.5; flex: 1; }
+.checklist-item.done .checklist-item-text { text-decoration: line-through; color: #aac5d8; }
+.item-area-tag { font-size: 9.5px; padding: 1px 6px; background: var(--blue-soft); color: var(--accent); border-radius: 8px; margin-left: 6px; white-space: nowrap; }
+.reset-btn { background: transparent; border: 1px solid var(--border); color: #7a9ab8; padding: 4px 11px; border-radius: 5px; font-size: 11px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+.reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── TABLE ── */
+.data-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.data-table th { text-align: left; padding: 8px 12px; background: var(--blue-soft); font-weight: 600; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--ink-light); border-bottom: 1px solid var(--border); }
+.data-table td { padding: 7px 12px; border-bottom: 1px solid var(--paper-dark); vertical-align: top; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: #f5faff; }
+
+/* ── SCADENZE ── */
+.scad-item { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--paper-dark); }
+.scad-item:last-child { border-bottom: none; }
+.scad-date { min-width: 48px; text-align: center; }
+.scad-date .day { font-size: 18px; font-weight: 700; color: var(--accent); line-height: 1; font-family: 'DM Serif Display', serif; }
+.scad-date .month { font-size: 9.5px; text-transform: uppercase; color: #7a9ab8; }
+.scad-info { flex: 1; }
+.scad-info h4 { font-size: 12.5px; font-weight: 600; color: var(--ink); }
+.scad-info p { font-size: 11px; color: #7a9ab8; margin-top: 1px; line-height: 1.4; }
+.scad-status { font-size: 10px; padding: 2px 8px; border-radius: 12px; font-weight: 600; white-space: nowrap; }
+.status-urgent { background: #fde8e6; color: var(--red); }
+.status-ok { background: #e3f5ec; color: var(--green); }
+.status-pending { background: #fdf3e0; color: var(--gold); }
+
+/* ── MONTH GROUP (scadenzario) ── */
+.month-group { margin-bottom: 20px; }
+.month-header {
+  font-family: 'DM Serif Display', serif;
+  font-size: 15px;
+  color: var(--white);
+  background: var(--accent);
+  padding: 8px 16px;
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.month-header .month-count { font-size: 10.5px; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-weight: 600; }
+.month-body { background: var(--white); border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px; }
+.scad-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 14px; border-bottom: 1px solid var(--paper-dark); font-size: 12.5px; cursor: pointer; transition: background 0.1s; }
+.scad-row:last-child { border-bottom: none; }
+.scad-row:hover { background: #f5faff; }
+.scad-row.done .scad-row-text { text-decoration: line-through; color: #aac5d8; }
+.scad-row.done .scad-row-date { color: #aac5d8; }
+.scad-row input[type=checkbox] { width: 13px; height: 13px; accent-color: var(--accent); flex-shrink: 0; margin-top: 3px; cursor: pointer; }
+.scad-row-date { font-weight: 600; color: var(--accent); white-space: nowrap; min-width: 80px; font-size: 11.5px; }
+.scad-row-text { flex: 1; color: var(--ink-light); line-height: 1.45; }
+.scad-row-badge { font-size: 9.5px; padding: 1px 6px; border-radius: 8px; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+
+/* ── ADD SCADENZA FORM ── */
+.add-scad-form { background: var(--white); border: 2px dashed var(--border); border-radius: 10px; padding: 18px; margin-bottom: 16px; }
+.add-scad-form h4 { font-weight: 600; margin-bottom: 12px; color: var(--ink); font-size: 13.5px; }
+.form-row { margin-bottom: 9px; }
+.form-row label { display: block; font-size: 10.5px; font-weight: 600; color: #7a9ab8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+.form-row input, .form-row textarea, .form-row select { width: 100%; padding: 7px 11px; border: 1px solid var(--border); border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--ink); background: var(--paper); transition: border-color 0.15s; }
+.form-row input:focus, .form-row textarea:focus, .form-row select:focus { outline: none; border-color: var(--accent); background: #fff; }
+.form-row textarea { resize: vertical; min-height: 60px; }
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-actions { display: flex; gap: 8px; margin-top: 12px; }
+.btn-primary { background: var(--accent); color: #fff; border: none; padding: 7px 18px; border-radius: 6px; font-size: 12.5px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.15s; }
+.btn-primary:hover { background: #1a4d87; }
+.btn-secondary { background: transparent; color: var(--ink-light); border: 1px solid var(--border); padding: 7px 18px; border-radius: 6px; font-size: 12.5px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.btn-secondary:hover { background: var(--paper-dark); }
+
+/* ── EMAIL TEMPLATES ── */
+.email-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 14px; overflow: hidden; }
+.email-header { padding: 10px 16px; background: var(--blue-soft); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+.email-header h4 { font-size: 12.5px; font-weight: 600; color: var(--ink); }
+.email-header-actions { display: flex; gap: 5px; align-items: center; }
+.email-type { font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 600; background: #fdf3e0; color: var(--gold); }
+.email-type.lavoro { background: var(--blue-soft); color: var(--accent); }
+.email-type.urgente { background: #fde8e6; color: var(--red); }
+.email-meta { padding: 8px 16px; background: #f9fbfe; border-bottom: 1px solid var(--paper-dark); }
+.email-meta-row { display: flex; gap: 6px; font-size: 11px; padding: 1px 0; }
+.email-meta-row label { color: #7a9ab8; min-width: 60px; font-weight: 500; }
+.email-body { padding: 12px 16px; font-size: 12px; line-height: 1.7; color: var(--ink-light); white-space: pre-wrap; font-family: 'DM Sans', sans-serif; background: var(--white); }
+.email-body[contenteditable="true"] { outline: none; border-top: 2px solid var(--accent); }
+.copy-btn, .edit-btn, .delete-btn { background: var(--ink); color: #fff; border: none; padding: 4px 10px; border-radius: 4px; font-size: 10.5px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.15s; }
+.copy-btn:hover { background: var(--accent); }
+.edit-btn { background: var(--accent); }
+.edit-btn:hover { background: #1a4d87; }
+.delete-btn { background: #9ab5cb; }
+.delete-btn:hover { background: var(--red); }
+
+/* ── TABS ── */
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 18px; flex-wrap: wrap; }
+.tab-btn { padding: 7px 14px; border: none; background: none; font-family: 'DM Sans', sans-serif; font-size: 12.5px; color: #7a9ab8; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; font-weight: 500; transition: color 0.15s; }
+.tab-btn:hover { color: var(--ink); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── BOXES ── */
+.alert-box { background: #fde8e6; border: 1px solid #f5c6c2; border-left: 4px solid var(--red); border-radius: 6px; padding: 9px 13px; font-size: 12px; color: var(--red); margin-bottom: 14px; }
+.info-box { background: var(--blue-soft); border: 1px solid var(--blue-mid); border-left: 4px solid var(--accent); border-radius: 6px; padding: 9px 13px; font-size: 12px; color: var(--accent); margin-bottom: 14px; }
+.ok-box { background: #e3f5ec; border: 1px solid #b8dfc9; border-left: 4px solid var(--green); border-radius: 6px; padding: 9px 13px; font-size: 12px; color: var(--green); margin-bottom: 14px; }
+
+/* ── KPI ── */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.kpi-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+.kpi-card h4 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #7a9ab8; margin-bottom: 9px; }
+.kpi-item { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--paper-dark); font-size: 12px; }
+.kpi-item:last-child { border-bottom: none; }
+.kpi-name { color: var(--ink-light); flex: 1; }
+.kpi-vals { display: flex; gap: 9px; align-items: center; }
+.kpi-actual { font-weight: 600; color: var(--ink); }
+.kpi-target { font-size: 10.5px; color: #9ab5cb; }
+.kpi-dot { width: 7px; height: 7px; border-radius: 50%; }
+.kpi-dot.ok { background: var(--green); }
+.kpi-dot.warn { background: var(--gold); }
+.kpi-dot.bad { background: var(--red); }
+
+/* ── CMD GRID ── */
+.cmd-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 10px; }
+.cmd-card { background: var(--paper); border-radius: 6px; padding: 7px 9px; }
+.cmd-card code { font-size: 11.5px; font-weight: 700; color: var(--accent); font-family: monospace; }
+.cmd-card p { font-size: 10.5px; color: #7a9ab8; margin-top: 2px; }
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--paper-dark); margin: 16px 0; }
+
+/* ── SCROLL ── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }
+
+/* ═══════════════ PRINT STYLES ═══════════════ */
+@media print {
+  @page { size: A4 portrait; margin: 10mm 8mm 10mm 8mm; }
+
+  /* ── RESET LAYOUT ── */
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body { background: #fff !important; font-size: 11px !important; margin: 0 !important; }
+  .sidebar, .topbar { display: none !important; }
+  .main { margin-left: 0 !important; width: 100% !important; }
+  .content { padding: 0 !important; width: 100% !important; }
+
+  /* ── HIDE ALL PANELS except active ── */
+  .panel { display: none !important; }
+  .panel.active { display: block !important; }
+
+  /* ── HIDE UI CHROME ── */
+  .print-btn, .reset-btn, .edit-btn, .delete-btn, .btn-primary, .btn-secondary,
+  #add-email-form, #add-scad-form-wrap, .tabs,
+  [id^="add-"], .add-scad-form,
+  .topbar-right, .nav-section,
+  .no-print { display: none !important; }
+
+  /* ── PRINT HEADER (show only on print) ── */
+  .print-header {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid #2563a8;
+    padding-bottom: 7px;
+    margin-bottom: 12px;
+  }
+  .print-header-logo { font-family: 'DM Serif Display', serif; font-size: 15px; color: #1e2d3d; }
+  .print-header-logo span { display: block; font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: #2563a8; font-family: 'DM Sans', sans-serif; }
+  .print-header-date { font-size: 10px; color: #7a9ab8; text-align: right; }
+
+  /* ── CARTELLINA HEADER ── */
+  .cartellina-header { border: 1px solid #c2d4e4 !important; border-radius: 6px; margin-bottom: 10px; page-break-inside: avoid; overflow: hidden; }
+  .cartellina-studio { background: #e8f1fa !important; padding: 6px 14px; font-size: 12px; border-bottom: 1px solid #c2d4e4; }
+  .cartellina-title-bar { background: #2563a8 !important; color: #fff !important; padding: 8px 14px; font-size: 17px; text-align: center; }
+  .cartellina-info-grid { padding: 7px 12px 5px; }
+  .cartellina-info-row { margin-bottom: 5px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .ci-label { font-size: 10.5px; font-weight: 700; color: #3a5068; white-space: nowrap; }
+  .ci-input { border: 1px solid #c2d4e4 !important; background: #fff !important; font-size: 11px; padding: 2px 6px; }
+  .ci-checks label { font-size: 10.5px; }
+  .ci-checks input[type=checkbox] { width: 11px; height: 11px; }
+
+  /* ── CARTELLINA TABLE ── */
+  .cartellina-table-wrap { border: 1px solid #c2d4e4 !important; border-radius: 5px; overflow: hidden; margin-bottom: 10px; }
+  .cartellina-table { width: 100%; border-collapse: collapse; font-size: 10.5px; }
+  .cartellina-table th { background: #e8f1fa !important; color: #1e2d3d; padding: 5px 7px; font-size: 9px; border-bottom: 1px solid #c2d4e4; }
+  .cartellina-table td { padding: 4px 7px; border-bottom: 1px solid #dde8f0; font-size: 10.5px; color: #1e2d3d; }
+  .cartellina-table tr.alt td { background: #f8fbfe !important; }
+  .cartellina-table tr:last-child td { border-bottom: none; }
+  .cartellina-table tr:hover td { background: transparent !important; }
+  .cartellina-num { font-weight: 700; color: #2563a8; text-align: center; }
+  .cartellina-cmd { font-family: monospace; font-size: 9.5px; font-weight: 700; color: #2563a8; background: #e8f1fa !important; padding: 1px 4px; border-radius: 3px; display: inline-block; }
+  .cartellina-chk input[type=checkbox] { width: 12px; height: 12px; }
+  .cartellina-note-input { border: 1px solid #c2d4e4 !important; background: #fff !important; font-size: 10px; width: 100%; padding: 2px 4px; }
+  .cartellina-tr-done td { opacity: 0.55; }
+  .cartellina-tr-done .cartellina-chk { opacity: 1; }
+  .cartellina-tr-done .desc-cell { text-decoration: line-through; color: #aac5d8; }
+  .ct-si { text-align: center; font-weight: 700; color: #1a7a50; }
+  .ct-no { text-align: center; color: #aac5d8; }
+
+  /* ── PROGRESS BAR ── */
+  .global-progress { padding: 6px 12px; margin-bottom: 8px; border: 1px solid #c2d4e4; border-radius: 6px; }
+  .global-progress-bar { height: 6px; }
+  .global-progress-fill { background: #2563a8 !important; }
+
+  /* ── SECTION HEADINGS ── */
+  .section-title { font-size: 13px; border-bottom-color: #c2d4e4; padding-bottom: 5px; margin-bottom: 8px; }
+  .cartellina-section-hdr { background: #e8f1fa !important; border: 1px solid #c2d4e4; border-bottom: none; border-radius: 5px 5px 0 0; padding: 5px 12px; font-size: 9px; font-weight: 700; color: #1e2d3d; }
+  .cartellina-textarea { border: 1px solid #c2d4e4 !important; border-top: none; border-radius: 0 0 5px 5px; min-height: 50px; font-size: 10.5px; padding: 6px 10px; }
+
+  /* ── OTHER PANELS ── */
+  .card { border: 1px solid #c2d4e4 !important; page-break-inside: avoid; margin-bottom: 6px; }
+  .card-header { background: #e8f1fa !important; }
+  .checklist-section { page-break-inside: avoid; border: 1px solid #c2d4e4 !important; margin-bottom: 6px; }
+  .checklist-section-header { background: #e8f1fa !important; }
+  .checklist-body { display: block !important; }
+  .month-group { page-break-inside: avoid; margin-bottom: 8px; }
+  .month-header { background: #2563a8 !important; color: #fff !important; }
+  .stats-row { grid-template-columns: repeat(4,1fr); gap: 6px; }
+  .stat-box::before { display: none; }
+  .stat-box { border: 1px solid #c2d4e4 !important; }
+  .data-table th { background: #e8f1fa !important; }
+  .tab-panel { display: block !important; margin-bottom: 6px; }
+  .info-box, .alert-box, .ok-box { page-break-inside: avoid; }
+  .cmd-grid { grid-template-columns: repeat(3,1fr); gap: 5px; }
+  .divider { margin: 10px 0; }
+
+  a { text-decoration: none; color: inherit; }
+}
+
+/* Print header hidden on screen */
+.print-header { display: none; }
+.no-print { /* hidden in print via @media rule */ }
+
+/* Sedi bar — hidden on screen, shown on print */
+.sedi-print-bar { display: none; }
+
+@media print {
+  .sedi-print-bar {
+    display: flex !important;
+    flex-wrap: wrap;
+    background: #1e2d3d;
+    color: #c8dae8;
+    padding: 10px 18px;
+    border-bottom: 2px solid #2563a8;
+    page-break-inside: avoid;
+    align-items: flex-start;
+    margin-bottom: 6px;
+  }
+  .sede-block { flex: 1; min-width: 180px; padding: 4px 10px; }
+  .sede-block-center { text-align: center; flex: 0.8; }
+  .sede-divider { width: 1px; background: rgba(255,255,255,0.15); margin: 0 4px; align-self: stretch; }
+  .sede-title { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #7ab3d4; margin-bottom: 3px; }
+  .sede-name { font-size: 11.5px; font-weight: 700; color: #ffffff; margin-bottom: 2px; }
+  .sede-line { font-size: 9px; color: #a8c5db; line-height: 1.7; }
+  .sede-tagline { font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+  .sede-op-line { font-size: 10px; color: #c8dae8; margin-top: 3px; }
+  .sede-op-line span { color: #fff; font-weight: 700; }
+  #operatore-input, .sedi-topbar, #topbar-datetime { display: none !important; }
+}
+
+/* ── CARTELLINA STYLES ── */
+.cartellina-header {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+.cartellina-studio {
+  background: var(--blue-soft);
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  border-bottom: 1px solid var(--border);
+  font-family: 'DM Serif Display', serif;
+}
+.cartellina-studio span { font-size: 11px; font-weight: 400; color: #7a9ab8; font-family: 'DM Sans', sans-serif; margin-left: 8px; font-style: italic; }
+.cartellina-title-bar {
+  background: var(--accent);
+  color: #fff;
+  text-align: center;
+  padding: 10px 18px;
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px;
+  letter-spacing: 0.3px;
+}
+.cartellina-info-grid { padding: 10px 16px 8px; display: flex; flex-direction: column; gap: 7px; }
+.cartellina-info-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ci-label { font-size: 12px; font-weight: 600; color: var(--ink-light); white-space: nowrap; }
+.ci-input {
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 4px 9px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--paper);
+  transition: border-color 0.15s;
+  flex: 1;
+  min-width: 120px;
+}
+.ci-input:focus { outline: none; border-color: var(--accent); background: #fff; }
+.ci-input-wide { flex: 1; }
+.ci-checks { display: flex; gap: 12px; flex-wrap: wrap; }
+.ci-checks label { display: flex; align-items: center; gap: 5px; font-size: 12.5px; color: var(--ink-light); cursor: pointer; }
+.ci-checks input[type=checkbox] { accent-color: var(--accent); width: 13px; height: 13px; }
+
+/* Cartellina table */
+.cartellina-table-wrap { background: var(--white); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.cartellina-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.cartellina-table th { background: var(--blue-soft); padding: 8px 10px; font-size: 10.5px; font-weight: 700; color: var(--ink); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); text-align: left; }
+.cartellina-table td { padding: 7px 10px; border-bottom: 1px solid var(--paper-dark); vertical-align: middle; color: var(--ink-light); line-height: 1.45; }
+.cartellina-table tr:last-child td { border-bottom: none; }
+.cartellina-table tr.alt td { background: #f8fbfe; }
+.cartellina-table .ct-si { text-align: center; font-weight: 700; color: var(--green); }
+.cartellina-table .ct-no { text-align: center; color: #aac5d8; }
+.cartellina-table tr:hover td { background: #f2f8ff; }
+
+.cartellina-num { font-weight: 700; color: var(--accent); text-align: center; }
+.cartellina-cmd { font-family: monospace; font-size: 11px; font-weight: 700; color: var(--accent); background: var(--blue-soft); padding: 2px 5px; border-radius: 4px; text-align: center; }
+.cartellina-chk { text-align: center; }
+.cartellina-chk input[type=checkbox] { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; }
+.cartellina-note-input {
+  width: 100%;
+  border: 1px solid var(--paper-dark);
+  border-radius: 4px;
+  padding: 3px 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11.5px;
+  background: transparent;
+  color: var(--ink-light);
+  resize: none;
+}
+.cartellina-note-input:focus { outline: none; border-color: var(--accent); background: #fff; }
+.cartellina-tr-done td { opacity: 0.5; }
+.cartellina-tr-done .cartellina-chk { opacity: 1; }
+.cartellina-tr-done .desc-cell { text-decoration: line-through; color: #aac5d8; }
+
+.cartellina-section-hdr {
+  background: var(--blue-soft);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  padding: 7px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.cartellina-textarea {
+  width: 100%;
+  min-height: 80px;
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 10px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--ink-light);
+  background: var(--white);
+  resize: vertical;
+}
+.cartellina-textarea:focus { outline: none; border-color: var(--accent); }
+
+</style>
+</head>
+<body>
+
+<!-- ════ SIDEBAR ════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo" style="padding:20px 20px 14px;">
+    <div style="font-size:19px;font-weight:700;color:#ffffff;letter-spacing:0.2px;line-height:1.25;">Studio Solomita</div>
+    <div style="font-size:11.5px;color:#a8c8e0;margin-top:6px;font-style:italic;">Fiscalisti &amp; Consulenti del Lavoro</div>
+    <div style="font-size:8.5px;text-transform:uppercase;letter-spacing:2px;color:#5a8aaa;margin-top:7px;">Sistema Operativo Integrato 2026</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">Panoramica</div>
+    <div class="nav-item active" onclick="showPanel('dashboard',this)"><span class="nav-icon">📊</span> Dashboard</div>
+    <div class="nav-item" onclick="showPanel('scadenze',this)"><span class="nav-icon">📅</span> Scadenze & Alert 2026</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">Checklist Giornaliere</div>
+    <div class="nav-item" onclick="showPanel('daily',this)"><span class="nav-icon">🌅</span> Routine Quotidiana</div>
+    <div class="nav-item" onclick="showPanel('segreteria',this)"><span class="nav-icon">🗂️</span> Gestione Segreteria</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">Procedure Area Fiscale</div>
+    <div class="nav-item" onclick="showPanel('bilancio',this)"><span class="nav-icon">📊</span> Bilancio di Esercizio</div>
+    <div class="nav-item" onclick="showPanel('unico',this)"><span class="nav-icon">📄</span> Dichiarazione Unico</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">Procedure Area Lavoro</div>
+    <div class="nav-item" onclick="showPanel('assunzioni',this)"><span class="nav-icon">✍️</span> Assunzioni</div>
+    <div class="nav-item" onclick="showPanel('proroghe',this)"><span class="nav-icon">🔄</span> Proroghe & Trasformazioni</div>
+    <div class="nav-item" onclick="showPanel('licenziamenti',this)"><span class="nav-icon">📋</span> Licenziamenti</div>
+    <div class="nav-item" onclick="showPanel('infortuni',this)"><span class="nav-icon">🏥</span> Infortuni / Mal. Prof.</div>
+    <div class="nav-item" onclick="showPanel('paghe',this)"><span class="nav-icon">💶</span> Elaborazione Paghe</div>
+    <div class="nav-item" onclick="showPanel('disciplinare',this)"><span class="nav-icon">⚖️</span> Procedimenti Disciplinari</div>
+    <div class="nav-item" onclick="showPanel('archiviazione',this)"><span class="nav-icon">🗄️</span> Archiviazione</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">Strumenti</div>
+    <div class="nav-item" onclick="showPanel('email',this)"><span class="nav-icon">✉️</span> Template Email/PEC</div>
+    <div class="nav-item" onclick="showPanel('kpi',this)"><span class="nav-icon">📈</span> KPI & Report</div>
+  </div>
+</aside>
+
+<!-- ════ MAIN ════ -->
+<main class="main">
+  <div class="topbar" style="flex-wrap:wrap;gap:8px;">
+    <h2 id="page-title">Dashboard</h2>
+    <div class="topbar-right" style="flex-wrap:wrap;gap:8px;">
+      <!-- Operatore + data/ora -->
+      <div style="display:flex;align-items:center;gap:6px;">
+        <label style="font-size:11px;font-weight:600;color:#7a9ab8;white-space:nowrap;">Operatore:</label>
+        <input id="operatore-input" type="text" placeholder="Inserisci nome…"
+          style="border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-family:'DM Sans',sans-serif;font-size:12.5px;color:var(--ink);background:var(--paper);width:160px;transition:border-color .15s;"
+          onfocus="this.style.borderColor='var(--accent)';this.style.background='#fff'"
+          onblur="this.style.borderColor='var(--border)';this.style.background='var(--paper)'"
+          oninput="updatePrintOperatore()">
+      </div>
+      <div id="topbar-datetime" style="font-size:11.5px;color:#7a9ab8;white-space:nowrap;font-weight:500;"></div>
+      <span class="badge badge-red" id="badge-urgenti">0 Urgenti</span>
+      <span class="badge badge-gold" id="badge-scad">0 In Scadenza</span>
+      <!-- Sedi -->
+      <div class="sedi-topbar" style="display:flex;gap:6px;align-items:center;">
+        <span class="badge badge-blue" style="cursor:pointer;border:none;" title="Sede di Rosolina&#10;Via Carabella 5, 45010 Rosolina (RO)&#10;Studio: +39 0426 1880119 | Mobile: +39 338 1477100&#10;amministrazione@studiosolomita.it">🏢 Rosolina</span>
+        <span class="badge badge-blue" style="cursor:pointer;border:none;" title="Sede di Foggia&#10;Via Stefano De Stefano 23, 71122 Foggia (FG)&#10;Studio: +39 0881 751884 | Mobile: +39 338 1477100&#10;info@studiosolomita.it">🏢 Foggia</span>
+      </div>
+      <a href="https://webmail.aruba.it/" target="_blank" style="text-decoration:none;">
+        <button class="print-btn" style="background:#fff3e0;border-color:#f0a030;color:#c97000;display:flex;align-items:center;gap:6px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="4" width="20" height="16" rx="2" fill="#f0a030"/>
+            <path d="M2 8l10 7 10-7" stroke="white" stroke-width="1.5" fill="none"/>
+          </svg>
+          Posta Aruba
+        </button>
+      </a>
+      <button class="print-btn" onclick="doPrint()">🖨️ Apri e Stampa</button>
+    </div>
+  </div>
+
+  <!-- Barra sedi completa (solo stampa) -->
+  <div class="sedi-print-bar no-screen">
+    <div class="sede-block">
+      <div class="sede-title">Sede di Rosolina</div>
+      <div class="sede-name">Studio Contabile Rosolina</div>
+      <div class="sede-line">Consulenza Aziendale Fiscale e Tributaria</div>
+      <div class="sede-line">Via Carabella, n. 5 – 45010 Rosolina (RO)</div>
+      <div class="sede-line">📧 amministrazione@studiosolomita.it &nbsp;|&nbsp; PEC: studiosolomitafabrizio@pec.it</div>
+      <div class="sede-line">☎ +39 0426 1880119 &nbsp;|&nbsp; 📱 +39 338 1477100</div>
+    </div>
+    <div class="sede-divider"></div>
+    <div class="sede-block">
+      <div class="sede-title">Sede di Foggia</div>
+      <div class="sede-name">Studio Solomita Fabrizio Stefano</div>
+      <div class="sede-line">Consulenza Aziendale Fiscale e Tributaria</div>
+      <div class="sede-line">Via Stefano De Stefano, n. 23 – 71122 Foggia (FG)</div>
+      <div class="sede-line">📧 info@studiosolomita.it &nbsp;|&nbsp; PEC: studiosolomitafabrizio@pec.it</div>
+      <div class="sede-line">☎ +39 0881 751884 &nbsp;|&nbsp; 📱 +39 338 1477100</div>
+    </div>
+    <div class="sede-divider"></div>
+    <div class="sede-block sede-block-center">
+      
+      <div class="sede-tagline">Proteggiamo i tuoi interessi</div>
+      <div class="sede-op-line">Operatore: <span id="print-operatore">——</span></div>
+      <div class="sede-op-line" id="print-datetime-bar"></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══ DASHBOARD ══ -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="print-header">
+        <div class="print-header-logo"></div>
+        <div class="print-header-date" id="ph-dashboard">Dashboard — <span id="today-date"></span></div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-num" id="stat-daily-pct">0%</div>
+          <div class="stat-label">Routine Quotidiana</div>
+          <div class="stat-progress"><div class="stat-progress-bar" id="spb-daily" style="width:0%"></div></div>
+          <div class="stat-sub" id="stat-daily-sub">0/0 completate</div>
+        </div>
+        <div class="stat-box teal">
+          <div class="stat-num" id="stat-bilancio-pct">0%</div>
+          <div class="stat-label">Bilancio Esercizio</div>
+          <div class="stat-progress"><div class="stat-progress-bar" id="spb-bilancio" style="width:0%"></div></div>
+          <div class="stat-sub" id="stat-bilancio-sub">0/15 completate</div>
+        </div>
+        <div class="stat-box gold">
+          <div class="stat-num" id="stat-unico-pct">0%</div>
+          <div class="stat-label">Dichiarazione Unico</div>
+          <div class="stat-progress"><div class="stat-progress-bar" id="spb-unico" style="width:0%"></div></div>
+          <div class="stat-sub" id="stat-unico-sub">0/30 completate</div>
+        </div>
+        <div class="stat-box green">
+          <div class="stat-num" id="stat-global-pct">0%</div>
+          <div class="stat-label">Progresso Globale</div>
+          <div class="stat-progress"><div class="stat-progress-bar" id="spb-global" style="width:0%"></div></div>
+          <div class="stat-sub">Tutte le checklist</div>
+        </div>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-header"><div class="card-icon blue">📅</div><div><div class="card-title">Prossime Scadenze</div><div class="card-subtitle">Entro 14 giorni</div></div></div>
+          <div class="card-body" id="dash-scadenze-preview"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-icon blue">✍️</div><div><div class="card-title">Assunzioni in corso</div><div class="card-subtitle">Pratiche aperte</div></div></div>
+          <div class="card-body">
+            <div class="proc-step"><div class="step-num">1</div><div class="step-text">Rossi Costruzioni s.r.l. — Operaio TD<div class="step-tags"><span class="step-tag">Doc. ricevuti</span><span class="step-tag alert">CO da inviare</span></div></div></div>
+            <div class="proc-step"><div class="step-num">2</div><div class="step-text">Farmacia Bianchi — Farmacista TI<div class="step-tags"><span class="step-tag ok">CO inviata</span></div></div></div>
+            <div class="proc-step"><div class="step-num">3</div><div class="step-text">Autofficina Verde — Apprendista<div class="step-tags"><span class="step-tag alert">Piano form. mancante</span></div></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-icon gold">💶</div><div><div class="card-title">Cedolini del mese</div><div class="card-subtitle">Stato elaborazione</div></div></div>
+          <div class="card-body">
+            <div style="margin-bottom:10px">
+              <div style="font-size:11px;color:#7a9ab8;display:flex;justify-content:space-between"><span>Elaborati</span><span>32/48</span></div>
+              <div style="height:5px;background:var(--paper-dark);border-radius:3px;overflow:hidden;margin:5px 0"><div style="width:66%;height:100%;background:var(--gold);border-radius:3px"></div></div>
+            </div>
+            <div class="proc-step"><div class="step-num">1</div><div class="step-text">Rossi Costruzioni — 5 cedolini<div class="step-tags"><span class="step-tag ok">Completati</span></div></div></div>
+            <div class="proc-step"><div class="step-num">2</div><div class="step-text">Farmacia Bianchi — 3 cedolini<div class="step-tags"><span class="step-tag alert">In attesa presenze</span></div></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-icon teal">📈</div><div><div class="card-title">KPI Mensili</div><div class="card-subtitle">Febbraio 2026</div></div></div>
+          <div class="card-body">
+            <div class="kpi-item"><span class="kpi-name">Scadenze rispettate</span><div class="kpi-vals"><span class="kpi-actual">98%</span><div class="kpi-dot warn"></div></div></div>
+            <div class="kpi-item"><span class="kpi-name">Risposta clienti</span><div class="kpi-vals"><span class="kpi-actual">18h</span><div class="kpi-dot ok"></div></div></div>
+            <div class="kpi-item"><span class="kpi-name">Errori rilevati</span><div class="kpi-vals"><span class="kpi-actual">1.2%</span><div class="kpi-dot ok"></div></div></div>
+            <div class="kpi-item"><span class="kpi-name">Rating clienti</span><div class="kpi-vals"><span class="kpi-actual">4.3/5</span><div class="kpi-dot ok"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SCADENZE 2026 ══ -->
+    <div class="panel" id="panel-scadenze">
+      <div class="print-header">
+        <div class="print-header-logo">Studio Solomita<span>Scadenzario Fiscale 2026</span></div>
+        <div class="print-header-date">Scadenzario — <span class="today-date-val"></span></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+        <h3 class="section-title" style="margin-bottom:0;border:none;padding:0">Scadenzario Fiscale 2026</h3>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <select id="scad-filter" onchange="filterScadenze()" style="padding:5px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--ink)">
+            <option value="">Tutti i mesi</option>
+            <option value="GEN">Gennaio</option><option value="FEB">Febbraio</option><option value="MAR">Marzo</option>
+            <option value="APR">Aprile</option><option value="MAG">Maggio</option><option value="GIU">Giugno</option>
+            <option value="LUG">Luglio</option><option value="AGO">Agosto</option><option value="SET">Settembre</option>
+            <option value="OTT">Ottobre</option><option value="NOV">Novembre</option><option value="DIC">Dicembre</option>
+          </select>
+          <button class="btn-primary" onclick="toggleAddScad()" id="add-scad-btn">➕ Nuova Scadenza</button>
+        </div>
+      </div>
+
+      <div id="add-scad-form-wrap" style="display:none">
+        <div class="add-scad-form">
+          <h4>➕ Aggiungi Scadenza Personalizzata</h4>
+          <div class="form-grid-2">
+            <div class="form-row"><label>Data</label><input type="date" id="ns-date"></div>
+            <div class="form-row"><label>Stato</label><select id="ns-status"><option value="urgent">Urgente</option><option value="pending">In Scadenza</option><option value="ok">Pianificato</option></select></div>
+          </div>
+          <div class="form-row"><label>Descrizione</label><input type="text" id="ns-desc" placeholder="Es: Versamento contributi INPS..."></div>
+          <div class="form-row"><label>Note (opzionale)</label><textarea id="ns-note" placeholder="Dettagli aggiuntivi..."></textarea></div>
+          <div class="form-actions">
+            <button class="btn-primary" onclick="saveNewScadenza()">💾 Aggiungi</button>
+            <button class="btn-secondary" onclick="toggleAddScad()">Annulla</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="scadenzario-list"></div>
+    </div>
+
+    <!-- ══ ROUTINE QUOTIDIANA ══ -->
+    <div class="panel" id="panel-daily">
+      <div class="print-header">
+        <div class="print-header-logo">Studio Solomita<span>Routine Operativa Quotidiana</span></div>
+        <div class="print-header-date">Checklist — <span class="today-date-val"></span></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <h3 class="section-title" style="margin-bottom:0;border:none;padding:0">Routine Operativa Quotidiana</h3>
+        <button class="reset-btn" onclick="resetChecklist('daily')">↺ Reset giornata</button>
+      </div>
+      <div class="global-progress">
+        <span class="global-progress-label">Progresso giornata:</span>
+        <div class="global-progress-bar"><div class="global-progress-fill" id="gp-daily" style="width:0%"></div></div>
+        <span class="global-progress-pct" id="gp-daily-pct">0%</span>
+      </div>
+      <div id="daily-sections"></div>
+    </div>
+
+    <!-- ══ SEGRETERIA ══ -->
+    <div class="panel" id="panel-segreteria">
+      <div class="print-header">
+        <div class="print-header-logo">Studio Solomita<span>Gestione Segreteria</span></div>
+        <div class="print-header-date">Checklist — <span class="today-date-val"></span></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <h3 class="section-title" style="margin-bottom:0;border:none;padding:0">Gestione Segreteria</h3>
+        <button class="reset-btn" onclick="resetChecklist('segreteria')">↺ Reset</button>
+      </div>
+      <div class="global-progress">
+        <span class="global-progress-label">Progresso:</span>
+        <div class="global-progress-bar"><div class="global-progress-fill" id="gp-segreteria" style="width:0%"></div></div>
+        <span class="global-progress-pct" id="gp-segreteria-pct">0%</span>
+      </div>
+      <div id="segreteria-sections"></div>
+    </div>
+
+    <!-- ══ BILANCIO ══ -->
+    <!-- ══ BILANCIO CARTELLINA ══ -->
+    <div class="panel" id="panel-bilancio">
+      <!-- PRINT HEADER -->
+      <div class="print-header">
+        <div class="print-header-logo">Studio Solomita — Fiscalisti - Consulenti del Lavoro<span>Area Fiscale — Bilancio di Esercizio</span></div>
+        <div class="print-header-date"><span class="today-date-val"></span></div>
+      </div>
+
+      <!-- TOP BAR -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <div>
+          <h3 class="section-title" style="margin-bottom:4px;border:none;padding:0">📊 Bilancio di Esercizio — Cartellina Cliente</h3>
+          <div style="font-size:11.5px;color:#7a9ab8" class="no-print">Compila i dati del cliente, spunta le attività completate. Stampa con Ctrl+P per la cartellina cartacea.</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap" class="no-print">
+          <button class="reset-btn" onclick="resetCartellina('bil')">↺ Reset checklist</button>
+          <button class="print-btn" onclick="window.print()">🖨️ Stampa Cartellina</button>
+        </div>
+      </div>
+
+      <!-- DATI CLIENTE -->
+      <div class="cartellina-header">
+        <div class="cartellina-studio">Studio Solomita <span>Fiscalisti — Consulenti del Lavoro</span></div>
+        <div class="cartellina-title-bar">BILANCIO DI ESERCIZIO  ANNO 2025</div>
+        <div class="cartellina-info-grid">
+          <div class="cartellina-info-row">
+            <span class="ci-label">Società / Ditta:</span>
+            <input class="ci-input ci-input-wide" id="bil-societa" type="text" placeholder="es. Rossi Costruzioni S.r.l." />
+            <span class="ci-label" style="margin-left:18px">N° Pratica:</span>
+            <input class="ci-input" id="bil-npratica" type="text" placeholder="——" style="width:80px" />
+          </div>
+          <div class="cartellina-info-row">
+            <span class="ci-label">Stato pratica:</span>
+            <div class="ci-checks">
+              <label><input type="checkbox" id="bil-st-aperta"> Aperta</label>
+              <label><input type="checkbox" id="bil-st-chiusa"> Chiusa</label>
+              <label><input type="checkbox" id="bil-st-inviata"> Inviata</label>
+              <label><input type="checkbox" id="bil-st-avvisato"> Avvisato</label>
+              <label><input type="checkbox" id="bil-st-f24"> F24 Consegnato</label>
+            </div>
+          </div>
+          <div class="cartellina-info-row">
+            <span class="ci-label">Stato inviato:</span>
+            <input class="ci-input" id="bil-stato-inv" type="text" placeholder="——" style="width:150px"/>
+            <span class="ci-label" style="margin-left:18px">Data verbale:</span>
+            <input class="ci-input" id="bil-data-verb" type="date" style="width:150px"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROGRESS -->
+      <div class="global-progress" style="margin-bottom:12px">
+        <span class="global-progress-label">Avanzamento checklist:</span>
+        <div class="global-progress-bar"><div class="global-progress-fill" id="gp-bilancio" style="width:0%"></div></div>
+        <span class="global-progress-pct" id="gp-bilancio-pct">0%</span>
+      </div>
+
+      <!-- CHECKLIST TABLE -->
+      <div class="cartellina-table-wrap">
+        <table class="cartellina-table">
+          <thead>
+            <tr>
+              <th style="width:38px">N.</th>
+              <th>Attività da fare</th>
+              <th style="width:110px">Cmd Ranocchi</th>
+              <th style="width:80px;text-align:center">✓ Fatto</th>
+              <th style="width:160px">Note</th>
+            </tr>
+          </thead>
+          <tbody id="bil-chk-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- NOTE -->
+      <div style="margin-top:14px">
+        <div class="cartellina-section-hdr">NOTE GENERALI</div>
+        <textarea id="bil-note-generali" class="cartellina-textarea" placeholder="Inserire note generali..."></textarea>
+      </div>
+
+      <!-- PAGE 2: INFO NORMATIVE -->
+      <div class="divider" style="margin:22px 0"></div>
+      <h3 class="section-title">📋 Riferimenti Normativi — Tipologie di Bilancio</h3>
+
+      <div class="cartellina-table-wrap" style="margin-bottom:16px">
+        <table class="cartellina-table">
+          <thead>
+            <tr>
+              <th>Adempimento obbligatorio</th>
+              <th style="width:120px;text-align:center">Micro impresa</th>
+              <th style="width:130px;text-align:center">Bilancio abbreviato</th>
+              <th style="width:120px;text-align:center">Bilancio ordinario</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Obbligo rendiconto finanziario</td><td class="ct-no">No</td><td class="ct-no">No</td><td class="ct-si">Sì</td></tr>
+            <tr class="alt"><td>Prevalenza sostanza sulla forma</td><td class="ct-no">No</td><td class="ct-si">Sì</td><td class="ct-si">Sì</td></tr>
+            <tr><td>Iscrizione derivati al fair value</td><td class="ct-no">No</td><td class="ct-si">Sì</td><td class="ct-si">Sì</td></tr>
+            <tr class="alt"><td>Valutazione al costo ammortizzato</td><td class="ct-no">No</td><td class="ct-no">No</td><td class="ct-si">Sì</td></tr>
+            <tr><td>Presenza conti d'ordine</td><td class="ct-no">No</td><td class="ct-no">No</td><td class="ct-no">No</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cartellina-table-wrap" style="margin-bottom:16px">
+        <table class="cartellina-table">
+          <thead><tr><th>Tipologia</th><th>Requisiti dimensionali (2 su 3)</th><th>Documenti del bilancio</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Micro imprese</strong></td><td>Ricavi ≤ €350.000 · Attivo ≤ €175.000 · Dipendenti ≤ 5</td><td>Stato patrimoniale · Conto economico · <em>Esonero NI e rendiconto</em></td></tr>
+            <tr class="alt"><td><strong>Piccole imprese</strong></td><td>Ricavi ≤ €8.800.000 · Attivo ≤ €4.400.000 · Dipendenti ≤ 50</td><td>SP · CE · Nota integrativa · <em>Esonero rendiconto</em></td></tr>
+            <tr><td><strong>Grandi imprese</strong></td><td>Ricavi &gt; €8.800.000 · Attivo &gt; €4.400.000 · Dipendenti &gt; 50</td><td>SP · CE · NI · Rendiconto finanziario · Relazione gestione</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Organo di controllo -->
+      <h3 class="section-title" style="margin-top:18px">🔍 Nomina Organo di Controllo / Revisore</h3>
+      <div class="info-box" style="margin-bottom:10px">Nomina obbligatoria al superamento di <strong>anche solo uno</strong> di questi limiti per <strong>due anni consecutivi</strong>.</div>
+      <div class="cartellina-table-wrap" style="margin-bottom:16px">
+        <table class="cartellina-table">
+          <thead><tr><th>Limite</th><th style="width:160px">Dato cliente</th><th style="width:100px;text-align:center">Sì / No</th></tr></thead>
+          <tbody>
+            <tr><td>Totale attivo ≥ €4.000.000</td><td><input type="text" class="ci-input ci-input-wide" placeholder="€ ——"></td><td style="text-align:center"><label><input type="checkbox" class="bil-limite-chk"> Sì</label></td></tr>
+            <tr class="alt"><td>Ricavi vendite/prestazioni ≥ €4.000.000</td><td><input type="text" class="ci-input ci-input-wide" placeholder="€ ——"></td><td style="text-align:center"><label><input type="checkbox" class="bil-limite-chk"> Sì</label></td></tr>
+            <tr><td>Dipendenti occupati in media ≥ 20</td><td><input type="text" class="ci-input ci-input-wide" placeholder="N. ——"></td><td style="text-align:center"><label><input type="checkbox" class="bil-limite-chk"> Sì</label></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Fallimento -->
+      <h3 class="section-title" style="margin-top:18px">⚠️ Limiti Dimensionali di Non Fallibilità</h3>
+      <div class="cartellina-table-wrap">
+        <table class="cartellina-table">
+          <tbody>
+            <tr><td style="width:20px;font-weight:700;color:var(--accent)">a)</td><td>Attivo patrimoniale complessivo annuo (3 esercizi prec.) <strong>≤ €300.000</strong></td><td style="width:130px"><input type="text" class="ci-input ci-input-wide" placeholder="€ ——"></td><td style="width:90px;text-align:center"><label><input type="checkbox"> OK</label></td></tr>
+            <tr class="alt"><td style="font-weight:700;color:var(--accent)">b)</td><td>Ricavi lordi complessivi annui (3 esercizi prec.) <strong>≤ €200.000</strong></td><td><input type="text" class="ci-input ci-input-wide" placeholder="€ ——"></td><td style="text-align:center"><label><input type="checkbox"> OK</label></td></tr>
+            <tr><td style="font-weight:700;color:var(--accent)">c)</td><td>Ammontare debiti (anche non scaduti) <strong>≤ €500.000</strong> · Soglia min. scaduti: €30.000</td><td><input type="text" class="ci-input ci-input-wide" placeholder="€ ——"></td><td style="text-align:center"><label><input type="checkbox"> OK</label></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="alert-box" style="margin-top:10px">⚠️ Superamento anche di <strong>uno solo</strong> dei limiti a) o b) per un solo anno = impresa assoggettabile a liquidazione giudiziale.</div>
+
+      <!-- Comandi Ranocchi -->
+      <div class="divider" style="margin:20px 0"></div>
+      <h3 class="section-title">🖥️ Comandi Ranocchi — Bilancio</h3>
+      <div class="cmd-grid" style="margin-top:8px">
+        <div class="cmd-card"><code>REGCES</code><p>Registro cespiti con calcolo e contabilizzazione</p></div>
+        <div class="cmd-card"><code>SCESIT</code><p>Stampa cespiti per categoria — controllo bilancio</p></div>
+        <div class="cmd-card"><code>CMANRIP</code><p>Calcolo manutenzioni e riparazioni</p></div>
+        <div class="cmd-card"><code>LEAST</code><p>Calcolo ratei e risconti</p></div>
+        <div class="cmd-card"><code>LEAS</code><p>Gestione leasing</p></div>
+        <div class="cmd-card"><code>RICPROG</code><p>Ricostruzione progressivi</p></div>
+        <div class="cmd-card"><code>GIS BIL</code><p>Chiusura e trasferimento bilancio</p></div>
+        <div class="cmd-card"><code>ABB.</code><p>Tipo bilancio abbreviato</p></div>
+        <div class="cmd-card"><code>PRES.</code><p>Storno IVA — controllo dichiarazione</p></div>
+      </div>
+    </div>
+
+    <!-- ══ UNICO CARTELLINA ══ -->
+    <div class="panel" id="panel-unico">
+      <!-- PRINT HEADER -->
+      <div class="print-header">
+        <div class="print-header-logo">Studio Solomita — Fiscalisti - Consulenti del Lavoro<span>Area Fiscale — Modello Unico 2025 — Redditi 2024</span></div>
+        <div class="print-header-date"><span class="today-date-val"></span></div>
+      </div>
+
+      <!-- TOP BAR -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <div>
+          <h3 class="section-title" style="margin-bottom:4px;border:none;padding:0">📄 Modello Unico 2025 — Redditi 2024 — Cartellina Cliente</h3>
+          <div style="font-size:11.5px;color:#7a9ab8" class="no-print">Compila i dati del cliente, spunta le verifiche completate. Stampa con Ctrl+P per la cartellina cartacea.</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap" class="no-print">
+          <button class="reset-btn" onclick="resetCartellina('un')">↺ Reset checklist</button>
+          <button class="print-btn" onclick="window.print()">🖨️ Stampa Cartellina</button>
+        </div>
+      </div>
+
+      <!-- DATI CLIENTE -->
+      <div class="cartellina-header">
+        <div class="cartellina-studio">Studio Solomita <span>Fiscalisti — Consulenti del Lavoro</span></div>
+        <div class="cartellina-title-bar">MODELLO UNICO 2025  —  REDDITI 2024</div>
+        <div class="cartellina-info-grid">
+          <div class="cartellina-info-row">
+            <span class="ci-label">Ditta / Contribuente:</span>
+            <input class="ci-input ci-input-wide" id="un-ditta" type="text" placeholder="es. Bianchi Paolo — Partita IVA xxxxxxxxxx" />
+            <span class="ci-label" style="margin-left:18px">N°:</span>
+            <input class="ci-input" id="un-npratica" type="text" placeholder="——" style="width:70px"/>
+          </div>
+          <div class="cartellina-info-row">
+            <span class="ci-label">Stato:</span>
+            <div class="ci-checks">
+              <label><input type="checkbox" id="un-st-aperta"> Aperta</label>
+              <label><input type="checkbox" id="un-st-chiusa"> Chiusa</label>
+              <label><input type="checkbox" id="un-st-inviata"> Inviata</label>
+              <label><input type="checkbox" id="un-st-avvisato"> Avvisato</label>
+              <label><input type="checkbox" id="un-st-f24"> F24 Consegnato</label>
+            </div>
+          </div>
+          <div class="cartellina-info-row">
+            <span class="ci-label">Camera di Commercio pagata:</span>
+            <div class="ci-checks">
+              <label><input type="checkbox" id="un-cciaa-si"> Sì</label>
+              <label><input type="checkbox" id="un-cciaa-no"> No</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROGRESS -->
+      <div class="global-progress" style="margin-bottom:12px">
+        <span class="global-progress-label">Avanzamento verifiche:</span>
+        <div class="global-progress-bar"><div class="global-progress-fill" id="gp-unico" style="width:0%"></div></div>
+        <span class="global-progress-pct" id="gp-unico-pct">0%</span>
+      </div>
+
+      <!-- CHECKLIST 30 VERIFICHE -->
+      <div class="cartellina-table-wrap">
+        <table class="cartellina-table">
+          <thead>
+            <tr>
+              <th style="width:38px">N.</th>
+              <th>Verifiche da fare</th>
+              <th style="width:80px;text-align:center">✓ Stato</th>
+              <th style="width:180px">Note</th>
+            </tr>
+          </thead>
+          <tbody id="un-chk-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- PAGE 2: PRIMA NOTA + VERIFICHE + F24 -->
+      <div class="divider" style="margin:22px 0"></div>
+      <h3 class="section-title">📒 Da Inserire in Prima Nota Contabilità</h3>
+      <div class="cartellina-table-wrap" style="margin-bottom:18px">
+        <table class="cartellina-table">
+          <thead>
+            <tr>
+              <th>Da contabilizzare</th>
+              <th style="width:70px;text-align:center">Fatto</th>
+              <th style="width:16px;background:var(--paper-dark);border:none"></th>
+              <th>Da contabilizzare</th>
+              <th style="width:70px;text-align:center">Fatto</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>TARI 2024</td><td style="text-align:center"><input type="checkbox" class="un-pn-chk" style="accent-color:var(--accent)"></td><td style="background:var(--paper-dark)"></td><td>Risultato di esercizio</td><td style="text-align:center"><input type="checkbox" class="un-pn-chk" style="accent-color:var(--accent)"></td></tr>
+            <tr class="alt"><td>IMU 2024</td><td style="text-align:center"><input type="checkbox" class="un-pn-chk" style="accent-color:var(--accent)"></td><td style="background:var(--paper-dark)"></td><td>Imposta IRES di competenza</td><td style="text-align:center"><input type="checkbox" class="un-pn-chk" style="accent-color:var(--accent)"></td></tr>
+            <tr><td>CCIAA 2024</td><td style="text-align:center"><input type="checkbox" class="un-pn-chk" style="accent-color:var(--accent)"></td><td style="background:var(--paper-dark)"></td><td>Imposta IRAP di competenza</td><td style="text-align:center"><input type="checkbox" class="un-pn-chk" style="accent-color:var(--accent)"></td></tr>
+            <tr class="alt"><td>Diritti demaniali / comunali</td><td style="text-align:center"><input type="checkbox" class="un-pn-chk" style="accent-color:var(--accent)"></td><td style="background:var(--paper-dark)"></td><td>Ammortamenti al 31.12.2024</td><td style="text-align:center"><input type="checkbox" class="un-pn-chk" style="accent-color:var(--accent)"></td></tr>
+            <tr><td>Suolo pubblico 2024</td><td style="text-align:center"><input type="checkbox" class="un-pn-chk" style="accent-color:var(--accent)"></td><td style="background:var(--paper-dark)"></td><td>Iper e super ammortamento</td><td style="text-align:center"><input type="checkbox" class="un-pn-chk" style="accent-color:var(--accent)"></td></tr>
+            <tr class="alt"><td>Affitti locali ed aziende</td><td style="text-align:center"><input type="checkbox" class="un-pn-chk" style="accent-color:var(--accent)"></td><td style="background:var(--paper-dark)"></td><td>Bonus affitti locali ed aziende</td><td style="text-align:center"><input type="checkbox" class="un-pn-chk" style="accent-color:var(--accent)"></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- VERIFICHE SPECIALI -->
+      <h3 class="section-title">🔎 Verifiche Aggiuntive</h3>
+      <div class="cartellina-table-wrap" style="margin-bottom:18px">
+        <table class="cartellina-table">
+          <thead><tr><th>Verifica</th><th style="width:80px;text-align:center">Fatto</th><th style="width:200px">Note</th></tr></thead>
+          <tbody>
+            <tr><td>Concordato preventivo biennale</td><td style="text-align:center"><input type="checkbox" class="un-ver-chk" style="accent-color:var(--accent)"></td><td><input type="text" class="ci-input ci-input-wide" placeholder="——"></td></tr>
+            <tr class="alt"><td>Flat Tax incrementale — Quadro LM</td><td style="text-align:center"><input type="checkbox" class="un-ver-chk" style="accent-color:var(--accent)"></td><td><input type="text" class="ci-input ci-input-wide" placeholder="——"></td></tr>
+            <tr><td>Verifica forfettari — superamento soglia</td><td style="text-align:center"><input type="checkbox" class="un-ver-chk" style="accent-color:var(--accent)"></td><td><input type="text" class="ci-input ci-input-wide" placeholder="——"></td></tr>
+            <tr class="alt"><td>Verifica forfettari — INPS</td><td style="text-align:center"><input type="checkbox" class="un-ver-chk" style="accent-color:var(--accent)"></td><td><input type="text" class="ci-input ci-input-wide" placeholder="——"></td></tr>
+            <tr><td>F24 da prelevare dal cassetto fiscale</td><td style="text-align:center"><input type="checkbox" class="un-ver-chk" style="accent-color:var(--accent)"></td><td><input type="text" class="ci-input ci-input-wide" placeholder="——"></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- F24 CODICI TRIBUTO -->
+      <h3 class="section-title">🧾 F24 — Codici Tributo dal Cassetto Fiscale</h3>
+      <div class="cartellina-table-wrap" style="margin-bottom:14px">
+        <table class="cartellina-table">
+          <thead>
+            <tr>
+              <th style="width:65px">Cod. Tributo</th>
+              <th style="width:50px">Anno</th>
+              <th>Soggetto contribuente</th>
+              <th>Tributo</th>
+              <th style="width:110px">Importo €</th>
+              <th style="width:65px;text-align:center">Fatto</th>
+            </tr>
+          </thead>
+          <tbody id="un-f24-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- NOTE FINALI -->
+      <div>
+        <div class="cartellina-section-hdr">NOTE</div>
+        <textarea id="un-note-generali" class="cartellina-textarea" placeholder="Inserire note generali..."></textarea>
+      </div>
+    </div>
+
+    <!-- ══ ASSUNZIONI ══ -->
+    <div class="panel" id="panel-assunzioni">
+      <div class="print-header">
+        <div class="print-header-logo">Studio Solomita<span>Area Lavoro — Procedura Assunzioni</span></div>
+        <div class="print-header-date">Procedura — <span class="today-date-val"></span></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <h3 class="section-title" style="margin-bottom:0;border:none;padding:0">Procedura Assunzioni</h3>
+        <button class="reset-btn" onclick="resetProcChecklist('ass')">↺ Reset checklist</button>
+      </div>
+      <div class="global-progress">
+        <span class="global-progress-label">Checklist:</span>
+        <div class="global-progress-bar"><div class="global-progress-fill" id="gp-ass" style="width:0%"></div></div>
+        <span class="global-progress-pct" id="gp-ass-pct">0%</span>
+      </div>
+      <div class="alert-box">📌 La CO al CPI va inviata il <strong>giorno precedente</strong> all'inizio del rapporto di lavoro.</div>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab(this,'ass-pre')">Pre-Assunzione</button>
+        <button class="tab-btn" onclick="switchTab(this,'ass-doc')">Documentazione</button>
+        <button class="tab-btn" onclick="switchTab(this,'ass-adv')">Adempimenti</button>
+        <button class="tab-btn active-print" onclick="switchTab(this,'ass-chk')">✅ Checklist</button>
+      </div>
+      <div class="tab-panel active" id="ass-pre">
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-header"><div class="card-icon blue">🔍</div><div><div class="card-title">Verifica Preliminare</div></div></div>
+            <div class="card-body">
+              <div class="proc-step"><div class="step-num">1</div><div class="step-text"><strong>Incentivi e agevolazioni</strong> — verificare decontribuzione, disabili L.68/99</div></div>
+              <div class="proc-step"><div class="step-num">2</div><div class="step-text"><strong>Limiti contratti TD</strong> — max 24 mesi, max 4 proroghe con causale</div></div>
+              <div class="proc-step"><div class="step-num">3</div><div class="step-text"><strong>Obbligo L. 68/99</strong> — verificare quota disabili obbligatoria del cliente</div></div>
+              <div class="proc-step"><div class="step-num">4</div><div class="step-text"><strong>Periodi già lavorati</strong> — verificare rapporti precedenti con il lavoratore</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-icon gold">📝</div><div><div class="card-title">Tipologie Contrattuali</div></div></div>
+            <div class="card-body">
+              <div class="proc-step"><div class="step-num">1</div><div class="step-text"><strong>Tempo Indeterminato (TI)</strong> — contratto standard<div class="step-tags"><span class="step-tag ok">Stabile</span></div></div></div>
+              <div class="proc-step"><div class="step-num">2</div><div class="step-text"><strong>Tempo Determinato (TD)</strong> — max 24 mesi, max 4 proroghe<div class="step-tags"><span class="step-tag">Verifica limiti</span></div></div></div>
+              <div class="proc-step"><div class="step-num">3</div><div class="step-text"><strong>Apprendistato</strong> — Piano Formativo Individuale obbligatorio<div class="step-tags"><span class="step-tag alert">PFI richiesto</span></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-panel" id="ass-doc">
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-header"><div class="card-icon blue">📁</div><div><div class="card-title">Documenti Obbligatori</div></div></div>
+            <div class="card-body">
+              <div class="proc-step"><div class="step-num">1</div><div class="step-text">Documento d'identità valido</div></div>
+              <div class="proc-step"><div class="step-num">2</div><div class="step-text">Codice fiscale e dati anagrafici completi</div></div>
+              <div class="proc-step"><div class="step-num">3</div><div class="step-text">Permesso di soggiorno (per extracomunitari)</div></div>
+              <div class="proc-step"><div class="step-num">4</div><div class="step-text">Titolo di studio / abilitazione professionale se richiesta</div></div>
+              <div class="proc-step"><div class="step-num">5</div><div class="step-text">IBAN per accredito stipendio</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-icon teal">📋</div><div><div class="card-title">Documenti da Predisporre</div></div></div>
+            <div class="card-body">
+              <div class="proc-step"><div class="step-num">1</div><div class="step-text">Contratto di assunzione (tipologia, mansione, CCNL, retribuzione)</div></div>
+              <div class="proc-step"><div class="step-num">2</div><div class="step-text">TFR 2 — scelta destinazione TFR (fondo pensione o INPS)</div></div>
+              <div class="proc-step"><div class="step-num">3</div><div class="step-text">Informativa Privacy GDPR (D.Lgs. 196/2003 e Reg. UE 679/2016)</div></div>
+              <div class="proc-step"><div class="step-num">4</div><div class="step-text">Trattamento Integrativo (ex bonus 100€) — autodichiarazione</div></div>
+              <div class="proc-step"><div class="step-num">5</div><div class="step-text">Piano Formativo Individuale (solo apprendisti)</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-panel" id="ass-adv">
+        <div class="card"><div class="card-body">
+          <div class="proc-step"><div class="step-num">1</div><div class="step-text"><strong>CO al CPI</strong> — il giorno PRIMA dell'inizio<div class="step-tags"><span class="step-tag alert">Termine perentorio</span></div></div></div>
+          <div class="proc-step"><div class="step-num">2</div><div class="step-text"><strong>Acquisizione dati in procedura paghe</strong></div></div>
+          <div class="proc-step"><div class="step-num">3</div><div class="step-text"><strong>Richiesta incentivi INPS/INAIL</strong> se agevolazione applicabile</div></div>
+          <div class="proc-step"><div class="step-num">4</div><div class="step-text"><strong>Archiviazione fascicolo</strong> — CO + contratto + documenti</div></div>
+        </div></div>
+      </div>
+      <div class="tab-panel" id="ass-chk"><div id="chk-ass-container"></div></div>
+    </div>
+
+    <!-- ══ PROROGHE ══ -->
+    <div class="panel" id="panel-proroghe">
+      <div class="print-header"><div class="print-header-logo">Studio Solomita<span>Area Lavoro — Proroghe & Trasformazioni</span></div><div class="print-header-date"><span class="today-date-val"></span></div></div>
+      <h3 class="section-title">Proroghe & Trasformazioni Contrattuali</h3>
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-header"><div class="card-icon blue">🔄</div><div><div class="card-title">Proroga TD</div></div></div>
+          <div class="card-body">
+            <div class="proc-step"><div class="step-num">1</div><div class="step-text">Verifica scadenza e possibilità di proroga</div></div>
+            <div class="proc-step"><div class="step-num">2</div><div class="step-text">Controllo numero proroghe già effettuate (max 4 con causale)</div></div>
+            <div class="proc-step"><div class="step-num">3</div><div class="step-text">Verifica causale per proroga (necessaria dopo la 1a proroga)</div></div>
+            <div class="proc-step"><div class="step-num">4</div><div class="step-text">Accordo con cliente su nuova scadenza</div></div>
+            <div class="proc-step"><div class="step-num">5</div><div class="step-text">Redazione accordo proroga scritto</div></div>
+            <div class="proc-step"><div class="step-num">6</div><div class="step-text">Invio CO proroga al CPI e archiviazione</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-icon teal">🔁</div><div><div class="card-title">Trasformazione TD → TI</div></div></div>
+          <div class="card-body">
+            <div class="proc-step"><div class="step-num">1</div><div class="step-text">Accordo con cliente sulla trasformazione</div></div>
+            <div class="proc-step"><div class="step-num">2</div><div class="step-text">Verifica incentivi per conversione (es. decontribuzione)</div></div>
+            <div class="proc-step"><div class="step-num">3</div><div class="step-text">Redazione lettera di trasformazione contrattuale</div></div>
+            <div class="proc-step"><div class="step-num">4</div><div class="step-text">Aggiornamento anagrafica in procedura paghe</div></div>
+            <div class="proc-step"><div class="step-num">5</div><div class="step-text">Invio CO trasformazione al CPI e archiviazione</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ LICENZIAMENTI ══ -->
+    <div class="panel" id="panel-licenziamenti">
+      <div class="print-header"><div class="print-header-logo">Studio Solomita<span>Area Lavoro — Licenziamenti</span></div><div class="print-header-date"><span class="today-date-val"></span></div></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <h3 class="section-title" style="margin-bottom:0;border:none;padding:0">Procedura Licenziamenti</h3>
+        <button class="reset-btn" onclick="resetProcChecklist('lic')">↺ Reset checklist</button>
+      </div>
+      <div class="global-progress">
+        <span class="global-progress-label">Checklist:</span>
+        <div class="global-progress-bar"><div class="global-progress-fill" id="gp-lic" style="width:0%"></div></div>
+        <span class="global-progress-pct" id="gp-lic-pct">0%</span>
+      </div>
+      <div class="alert-box">⚖️ Verificare normativa: Art. 18 Statuto Lavoratori vs D.Lgs. 23/2015 (tutele crescenti) in base alla data di assunzione.</div>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab(this,'lic-gm')">G.M. Oggettivo</button>
+        <button class="tab-btn" onclick="switchTab(this,'lic-gc')">Giusta Causa</button>
+        <button class="tab-btn" onclick="switchTab(this,'lic-disc')">Disciplinare</button>
+        <button class="tab-btn" onclick="switchTab(this,'lic-chk')">✅ Checklist</button>
+      </div>
+      <div class="tab-panel active" id="lic-gm">
+        <div class="card"><div class="card-body">
+          <div class="proc-step"><div class="step-num">1</div><div class="step-text">Analisi motivazioni (crisi, ristrutturazione, soppressione mansione)</div></div>
+          <div class="proc-step"><div class="step-num">2</div><div class="step-text">Verifica obbligo repêchage — tentare reimpiego in altra mansione</div></div>
+          <div class="proc-step"><div class="step-num">3</div><div class="step-text">Verifica preavviso contrattuale applicabile</div></div>
+          <div class="proc-step"><div class="step-num">4</div><div class="step-text">Redazione lettera licenziamento con motivazione specifica</div></div>
+          <div class="proc-step"><div class="step-num">5</div><div class="step-text">Invio CO cessazione al CPI</div></div>
+          <div class="proc-step"><div class="step-num">6</div><div class="step-text">Calcolo liquidazione: TFR + ferie residue + permessi + preavviso</div></div>
+        </div></div>
+      </div>
+      <div class="tab-panel" id="lic-gc">
+        <div class="card"><div class="card-body">
+          <div class="proc-step"><div class="step-num">1</div><div class="step-text">Documentazione del fatto grave</div></div>
+          <div class="proc-step"><div class="step-num">2</div><div class="step-text">Redazione lettera giusta causa — NO preavviso dovuto</div></div>
+          <div class="proc-step"><div class="step-num">3</div><div class="step-text">Invio CO cessazione al CPI</div></div>
+          <div class="proc-step"><div class="step-num">4</div><div class="step-text">Calcolo TFR + competenze maturate (no indennità preavviso)</div></div>
+        </div></div>
+      </div>
+      <div class="tab-panel" id="lic-disc">
+        <div class="card"><div class="card-body">
+          <div class="proc-step"><div class="step-num">1</div><div class="step-text">Contestazione disciplinare scritta al lavoratore</div></div>
+          <div class="proc-step"><div class="step-num">2</div><div class="step-text"><strong>Attesa risposta: 5 giorni lavorativi</strong><div class="step-tags"><span class="step-tag alert">Termine perentorio</span></div></div></div>
+          <div class="proc-step"><div class="step-num">3</div><div class="step-text">Audizione lavoratore (può farsi assistere da RSA/RSU)</div></div>
+          <div class="proc-step"><div class="step-num">4</div><div class="step-text">Valutazione risposta e decisione finale</div></div>
+          <div class="proc-step"><div class="step-num">5</div><div class="step-text">Redazione lettera licenziamento disciplinare definitiva</div></div>
+          <div class="proc-step"><div class="step-num">6</div><div class="step-text">Invio CO cessazione al CPI</div></div>
+        </div></div>
+      </div>
+      <div class="tab-panel" id="lic-chk"><div id="chk-lic-container"></div></div>
+    </div>
+
+    <!-- ══ INFORTUNI ══ -->
+    <div class="panel" id="panel-infortuni">
+      <div class="print-header"><div class="print-header-logo">Studio Solomita<span>Area Lavoro — Infortuni</span></div><div class="print-header-date"><span class="today-date-val"></span></div></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <h3 class="section-title" style="margin-bottom:0;border:none;padding:0">Infortuni sul Lavoro / Malattie Professionali</h3>
+        <button class="reset-btn" onclick="resetProcChecklist('inf')">↺ Reset checklist</button>
+      </div>
+      <div class="global-progress">
+        <span class="global-progress-label">Checklist:</span>
+        <div class="global-progress-bar"><div class="global-progress-fill" id="gp-inf" style="width:0%"></div></div>
+        <span class="global-progress-pct" id="gp-inf-pct">0%</span>
+      </div>
+      <div class="alert-box">🚨 <strong>DEADLINE: 2 giorni lavorativi</strong> dal certificato medico per inviare la denuncia INAIL.</div>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab(this,'inf-proc')">Procedura</button>
+        <button class="tab-btn" onclick="switchTab(this,'inf-chk')">✅ Checklist</button>
+      </div>
+      <div class="tab-panel active" id="inf-proc">
+        <div class="card"><div class="card-body">
+          <div class="proc-step"><div class="step-num">1</div><div class="step-text"><strong>Ricezione segnalazione</strong> — documentare data/ora</div></div>
+          <div class="proc-step"><div class="step-num">2</div><div class="step-text"><strong>Richiesta IMMEDIATA certificato medico</strong> — START timer 2 giorni<div class="step-tags"><span class="step-tag alert">Timer 48h</span></div></div></div>
+          <div class="proc-step"><div class="step-num">3</div><div class="step-text">Raccogliere dinamica infortunio: luogo, ora, mansione</div></div>
+          <div class="proc-step"><div class="step-num">4</div><div class="step-text">Compilare denuncia INAIL in formato XML tramite portale INAIL</div></div>
+          <div class="proc-step"><div class="step-num">5</div><div class="step-text"><strong>Invio denuncia INAIL entro 2 giorni lavorativi</strong><div class="step-tags"><span class="step-tag alert">Termine perentorio</span></div></div></div>
+          <div class="proc-step"><div class="step-num">6</div><div class="step-text">Archiviare ricevuta INAIL e registrare nel Registro Infortuni</div></div>
+          <div class="proc-step"><div class="step-num">7</div><div class="step-text">Aggiornare elaborazione paghe: astensione e trattamento economico INAIL</div></div>
+        </div></div>
+      </div>
+      <div class="tab-panel" id="inf-chk"><div id="chk-inf-container"></div></div>
+    </div>
+
+    <!-- ══ PAGHE ══ -->
+    <div class="panel" id="panel-paghe">
+      <div class="print-header"><div class="print-header-logo">Studio Solomita<span>Area Lavoro — Elaborazione Paghe</span></div><div class="print-header-date"><span class="today-date-val"></span></div></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <h3 class="section-title" style="margin-bottom:0;border:none;padding:0">Elaborazione Paghe Mensile</h3>
+        <button class="reset-btn" onclick="resetProcChecklist('paghe')">↺ Reset checklist</button>
+      </div>
+      <div class="global-progress">
+        <span class="global-progress-label">Checklist:</span>
+        <div class="global-progress-bar"><div class="global-progress-fill" id="gp-paghe" style="width:0%"></div></div>
+        <span class="global-progress-pct" id="gp-paghe-pct">0%</span>
+      </div>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab(this,'paghe-proc')">Procedura</button>
+        <button class="tab-btn" onclick="switchTab(this,'paghe-scad')">Scadenze</button>
+        <button class="tab-btn" onclick="switchTab(this,'paghe-chk')">✅ Checklist</button>
+      </div>
+      <div class="tab-panel active" id="paghe-proc">
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-header"><div class="card-icon blue">📥</div><div><div class="card-title">Raccolta Dati</div><div class="card-subtitle">Entro 5 del mese</div></div></div>
+            <div class="card-body">
+              <div class="proc-step"><div class="step-num">1</div><div class="step-text">Richiesta presenze/assenze al cliente</div></div>
+              <div class="proc-step"><div class="step-num">2</div><div class="step-text">Raccolta certificati malattia (cod. INPS online)</div></div>
+              <div class="proc-step"><div class="step-num">3</div><div class="step-text">Acquisizione straordinari, permessi, ferie godute</div></div>
+              <div class="proc-step"><div class="step-num">4</div><div class="step-text">Verifica variazioni anagrafiche (assunzioni, cessazioni)</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-icon gold">⚙️</div><div><div class="card-title">Elaborazione</div><div class="card-subtitle">Entro 10 del mese</div></div></div>
+            <div class="card-body">
+              <div class="proc-step"><div class="step-num">1</div><div class="step-text">Inserimento dati variabili nel software paghe</div></div>
+              <div class="proc-step"><div class="step-num">2</div><div class="step-text">Elaborazione cedolini e verifica calcoli</div></div>
+              <div class="proc-step"><div class="step-num">3</div><div class="step-text">Stampa / invio cedolini al cliente</div></div>
+              <div class="proc-step"><div class="step-num">4</div><div class="step-text">Generazione file UniEmens per INPS</div></div>
+              <div class="proc-step"><div class="step-num">5</div><div class="step-text">Preparazione F24 con contributi e ritenute IRPEF</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-icon teal">✅</div><div><div class="card-title">Adempimenti</div><div class="card-subtitle">Scadenze mensili</div></div></div>
+            <div class="card-body">
+              <div class="proc-step"><div class="step-num">1</div><div class="step-text">UniEmens entro il <strong>25 del mese</strong> successivo<div class="step-tags"><span class="step-tag alert">25 del mese</span></div></div></div>
+              <div class="proc-step"><div class="step-num">2</div><div class="step-text">F24 contributi e ritenute entro il <strong>16 del mese</strong><div class="step-tags"><span class="step-tag alert">16 del mese</span></div></div></div>
+              <div class="proc-step"><div class="step-num">3</div><div class="step-text">Archiviazione cedolini, LUL e documentazione mensile</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-panel" id="paghe-scad">
+        <div class="card"><div class="card-body">
+          <table class="data-table">
+            <thead><tr><th>Entro il</th><th>Adempimento</th><th>Tipo</th></tr></thead>
+            <tbody>
+              <tr><td>5 del mese</td><td>Raccolta presenze e dati variabili dai clienti</td><td><span class="step-tag">Ingresso dati</span></td></tr>
+              <tr><td>10 del mese</td><td>Elaborazione cedolini e invio al cliente</td><td><span class="step-tag">Paghe</span></td></tr>
+              <tr><td>16 del mese</td><td>Versamento F24 contributi e ritenute IRPEF</td><td><span class="step-tag alert">Scadenza</span></td></tr>
+              <tr><td>25 del mese</td><td>Invio UniEmens a INPS</td><td><span class="step-tag alert">Denuncia INPS</span></td></tr>
+              <tr><td>Fine mese</td><td>Archiviazione LUL e documentazione mensile</td><td><span class="step-tag ok">Archiviazione</span></td></tr>
+            </tbody>
+          </table>
+        </div></div>
+      </div>
+      <div class="tab-panel" id="paghe-chk"><div id="chk-paghe-container"></div></div>
+    </div>
+
+    <!-- ══ DISCIPLINARE ══ -->
+    <div class="panel" id="panel-disciplinare">
+      <div class="print-header"><div class="print-header-logo">Studio Solomita<span>Area Lavoro — Procedimenti Disciplinari</span></div><div class="print-header-date"><span class="today-date-val"></span></div></div>
+      <h3 class="section-title">Procedimenti Disciplinari</h3>
+      <div class="info-box">📋 Art. 7 Statuto dei Lavoratori — rispettare sempre i termini e il diritto di difesa.</div>
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-header"><div class="card-icon blue">1️⃣</div><div><div class="card-title">Contestazione Disciplinare</div></div></div>
+          <div class="card-body">
+            <div class="proc-step"><div class="step-num">1</div><div class="step-text">Verifica infrazione e codice disciplinare CCNL applicabile</div></div>
+            <div class="proc-step"><div class="step-num">2</div><div class="step-text">Raccolta prove e documentazione del fatto</div></div>
+            <div class="proc-step"><div class="step-num">3</div><div class="step-text">Redazione contestazione disciplinare scritta</div></div>
+            <div class="proc-step"><div class="step-num">4</div><div class="step-text">Consegna con ricevuta (PEC / raccomandata / firma)</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-icon gold">2️⃣</div><div><div class="card-title">Difesa e Decisione</div><div class="card-subtitle">Termini perentori</div></div></div>
+          <div class="card-body">
+            <div class="proc-step"><div class="step-num">1</div><div class="step-text"><strong>Attesa 5 giorni lavorativi</strong> per risposta del lavoratore<div class="step-tags"><span class="step-tag alert">Obbligatorio</span></div></div></div>
+            <div class="proc-step"><div class="step-num">2</div><div class="step-text">Eventuale audizione — lavoratore può farsi assistere da RSA/RSU</div></div>
+            <div class="proc-step"><div class="step-num">3</div><div class="step-text">Scelta sanzione e comunicazione scritta</div></div>
+            <div class="proc-step"><div class="step-num">4</div><div class="step-text">Archiviazione procedura nel fascicolo del lavoratore</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ ARCHIVIAZIONE ══ -->
+    <div class="panel" id="panel-archiviazione">
+      <div class="print-header"><div class="print-header-logo">Studio Solomita<span>Archiviazione Documentale</span></div><div class="print-header-date"><span class="today-date-val"></span></div></div>
+      <h3 class="section-title">Archiviazione Documentale</h3>
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-header"><div class="card-icon blue">📁</div><div><div class="card-title">Struttura Cartelle</div></div></div>
+          <div class="card-body">
+            <div class="info-box" style="margin-bottom:9px">📂 <strong>Cliente → Lavoratori → Anno → Mese</strong></div>
+            <div class="proc-step"><div class="step-num">1</div><div class="step-text">Nomenclatura file: <strong>YYYYMMDD_TipoDoc_NomeLav</strong></div></div>
+            <div class="proc-step"><div class="step-num">2</div><div class="step-text">Contratti e CO nella cartella lavoratore (permanente)</div></div>
+            <div class="proc-step"><div class="step-num">3</div><div class="step-text">Cedolini e buste paga in cartella mensile</div></div>
+            <div class="proc-step"><div class="step-num">4</div><div class="step-text">Documenti INAIL/INPS con ricevuta di trasmissione allegata</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-icon teal">🔒</div><div><div class="card-title">Conservazione & Backup</div></div></div>
+          <div class="card-body">
+            <div class="proc-step"><div class="step-num">1</div><div class="step-text">Contratti di lavoro: conservare <strong>5 anni</strong> post cessazione</div></div>
+            <div class="proc-step"><div class="step-num">2</div><div class="step-text">Cedolini e LUL: conservare <strong>10 anni</strong></div></div>
+            <div class="proc-step"><div class="step-num">3</div><div class="step-text">Denuncia INAIL infortuni: conservare <strong>4 anni</strong></div></div>
+            <div class="proc-step"><div class="step-num">4</div><div class="step-text">Backup mensile su cloud e copia locale</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ EMAIL TEMPLATES ══ -->
+    <div class="panel" id="panel-email">
+      <div class="print-header"><div class="print-header-logo">Studio Solomita<span>Template Email / PEC</span></div><div class="print-header-date"><span class="today-date-val"></span></div></div>
+      <h3 class="section-title">Template Email / PEC</h3>
+      <div id="add-email-form" style="display:none">
+        <div class="add-scad-form">
+          <h4>➕ Nuovo Template</h4>
+          <div class="form-grid-2">
+            <div class="form-row"><label>Titolo</label><input type="text" id="new-email-title" placeholder="Es: Sollecito Documenti Paghe"></div>
+            <div class="form-row"><label>Tipo</label><select id="new-email-type"><option value="">Generale</option><option value="lavoro">Area Lavoro</option><option value="urgente">Urgente</option></select></div>
+          </div>
+          <div class="form-row"><label>Oggetto Email</label><input type="text" id="new-email-subject" placeholder="Es: OGGETTO – [RAGIONE SOCIALE] – [DATA]"></div>
+          <div class="form-row"><label>Testo</label><textarea id="new-email-body" style="min-height:120px" placeholder="Gentile Cliente,&#10;&#10;[CORPO]&#10;&#10;Cordiali saluti,&#10;Studio Solomita"></textarea></div>
+          <div class="form-actions">
+            <button class="btn-primary" onclick="saveNewTemplate()">💾 Salva</button>
+            <button class="btn-secondary" onclick="toggleAddEmailForm()">Annulla</button>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:18px;align-items:center">
+        <button class="btn-primary" onclick="toggleAddEmailForm()">➕ Aggiungi Template</button>
+        <span style="font-size:12px;color:#7a9ab8" id="template-count"></span>
+      </div>
+      <div id="email-templates-list"></div>
+    </div>
+
+    <!-- ══ KPI ══ -->
+    <div class="panel" id="panel-kpi">
+      <div class="print-header"><div class="print-header-logo">Studio Solomita<span>KPI & Report</span></div><div class="print-header-date"><span class="today-date-val"></span></div></div>
+      <h3 class="section-title">KPI & Report Studio</h3>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <h4>⚙️ Operatività</h4>
+          <div class="kpi-item"><span class="kpi-name">Scadenze rispettate</span><div class="kpi-vals"><span class="kpi-target">target: 100%</span><span class="kpi-actual">98%</span><div class="kpi-dot warn"></div></div></div>
+          <div class="kpi-item"><span class="kpi-name">Risposta clienti</span><div class="kpi-vals"><span class="kpi-target">&lt;24h</span><span class="kpi-actual">18h</span><div class="kpi-dot ok"></div></div></div>
+          <div class="kpi-item"><span class="kpi-name">Pratiche nei tempi</span><div class="kpi-vals"><span class="kpi-target">&gt;95%</span><span class="kpi-actual">97%</span><div class="kpi-dot ok"></div></div></div>
+          <div class="kpi-item"><span class="kpi-name">Email inevase</span><div class="kpi-vals"><span class="kpi-target">0</span><span class="kpi-actual">0</span><div class="kpi-dot ok"></div></div></div>
+        </div>
+        <div class="kpi-card">
+          <h4>🔍 Qualità</h4>
+          <div class="kpi-item"><span class="kpi-name">Errori rilevati</span><div class="kpi-vals"><span class="kpi-target">&lt;2%</span><span class="kpi-actual">1.2%</span><div class="kpi-dot ok"></div></div></div>
+          <div class="kpi-item"><span class="kpi-name">Reclami mensili</span><div class="kpi-vals"><span class="kpi-target">&lt;1</span><span class="kpi-actual">0</span><div class="kpi-dot ok"></div></div></div>
+          <div class="kpi-item"><span class="kpi-name">Conformità procedure</span><div class="kpi-vals"><span class="kpi-target">&gt;98%</span><span class="kpi-actual">99%</span><div class="kpi-dot ok"></div></div></div>
+          <div class="kpi-item"><span class="kpi-name">Correzione errori</span><div class="kpi-vals"><span class="kpi-target">&lt;24h</span><span class="kpi-actual">12h</span><div class="kpi-dot ok"></div></div></div>
+        </div>
+        <div class="kpi-card">
+          <h4>👥 Soddisfazione Cliente</h4>
+          <div class="kpi-item"><span class="kpi-name">Rating soddisfazione</span><div class="kpi-vals"><span class="kpi-target">&gt;4/5</span><span class="kpi-actual">4.3/5</span><div class="kpi-dot ok"></div></div></div>
+          <div class="kpi-item"><span class="kpi-name">Tasso rinnovo</span><div class="kpi-vals"><span class="kpi-target">&gt;90%</span><span class="kpi-actual">94%</span><div class="kpi-dot ok"></div></div></div>
+          <div class="kpi-item"><span class="kpi-name">Tempestività comunicazioni</span><div class="kpi-vals"><span class="kpi-target">&gt;95%</span><span class="kpi-actual">96%</span><div class="kpi-dot ok"></div></div></div>
+          <div class="kpi-item"><span class="kpi-name">Doc. clienti in tempo</span><div class="kpi-vals"><span class="kpi-target">&gt;80%</span><span class="kpi-actual">75%</span><div class="kpi-dot warn"></div></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════
+
+const TODAY = new Date();
+document.getElementById('today-date').textContent = TODAY.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+document.querySelectorAll('.today-date-val').forEach(el=>el.textContent=TODAY.toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'}));
+
+// ── DAILY CHECKLIST DATA ──
+const DAILY_DATA = [
+  { id: 'ap', title: '🌅 1. Apertura della Giornata', items: [
+    { id:'ap1',text:'Verifica scadenze del giorno sul gestionale' },
+    { id:'ap2',text:'Controllo agenda appuntamenti' },
+    { id:'ap3',text:'Briefing rapido con il team (10 minuti)' },
+    { id:'ap4',text:'Controllo PEC in entrata' },
+    { id:'ap5',text:'Controllo email clienti' },
+    { id:'ap6',text:'Verifica notifiche portali (AE, INPS, INAIL, CCIAA)' },
+    { id:'ap7',text:'Aggiornamento urgenze o criticità' }
+  ]},
+  { id:'cont',title:'📊 2. Attività Operative – Contabilità', items:[
+    { id:'co1',text:'Registrazione documenti ricevuti' },
+    { id:'co2',text:'Verifica documenti mancanti e richieste ai clienti' },
+    { id:'co3',text:'Quadrature giornaliere (cassa, banca, IVA)' },
+    { id:'co4',text:'Aggiornamento scadenziario contabile' },
+    { id:'co5',text:'Controllo pratiche aperte e avanzamento lavori' }
+  ]},
+  { id:'fisc',title:'💰 3. Attività Operative – Fiscale', items:[
+    { id:'fi1',text:'Preparazione o verifica F24' },
+    { id:'fi2',text:'Controllo liquidazioni IVA' },
+    { id:'fi3',text:'Gestione comunicazioni periodiche (esterometro, LIPE, CU)' },
+    { id:'fi4',text:'Monitoraggio dichiarativi in corso' },
+    { id:'fi5',text:'Verifica avvisi o cartelle da gestire' }
+  ]},
+  { id:'lavor',title:'👥 4. Attività Operative – Paghe & Lavoro', items:[
+    { id:'pa1',text:'Elaborazione cedolini programmati' },
+    { id:'pa2',text:'Controllo presenze e anomalie' },
+    { id:'pa3',text:'Invio comunicazioni obbligatorie (UNILAV)' },
+    { id:'pa4',text:'Verifica scadenze contributive' },
+    { id:'pa5',text:'Aggiornamento anagrafiche dipendenti' }
+  ]},
+  { id:'cli',title:'📞 5. Comunicazione con i Clienti', items:[
+    { id:'cl1',text:'Risposta ai quesiti ricevuti' },
+    { id:'cl2',text:'Invio richieste documenti mancanti' },
+    { id:'cl3',text:'Aggiornamento su scadenze imminenti' },
+    { id:'cl4',text:'Pianificazione incontri o call' },
+    { id:'cl5',text:'Gestione eventuali reclami o criticità' }
+  ]},
+  { id:'amm',title:'🏢 6. Amministrazione Interna Studio', items:[
+    { id:'ad1',text:'Fatturazione attiva del giorno' },
+    { id:'ad2',text:'Registrazione fatture passive' },
+    { id:'ad3',text:'Controllo incassi e solleciti' },
+    { id:'ad4',text:'Aggiornamento CRM clienti' },
+    { id:'ad5',text:'Archiviazione digitale e protocollazione' },
+    { id:'ad6',text:'Verifica funzionamento software e backup' }
+  ]},
+  { id:'chius',title:'🌙 7. Chiusura della Giornata', items:[
+    { id:'ch1',text:'Aggiornamento stato avanzamento lavori' },
+    { id:'ch2',text:'Pianificazione attività del giorno successivo' },
+    { id:'ch3',text:'Pulizia inbox e PEC (zero inbox policy)' },
+    { id:'ch4',text:'Backup e archiviazione documenti' },
+    { id:'ch5',text:'Debriefing finale (5 minuti)' },
+    { id:'ch6',text:'Chiusura portali e logout sicuro' }
+  ]}
+];
+
+// ── SEGRETERIA DATA ──
+const SEG_DATA = [
+  { id:'seg_in',title:'📥 Posta in Arrivo – PEC / Email / Raccomandate', items:[
+    { id:'se1',text:'Controllo PEC ogni mattina (h 9:00)' },
+    { id:'se2',text:'Classificazione per tipologia: INPS, INAIL, CPI, Cliente, Lavoratore' },
+    { id:'se3',text:'Assegnazione al responsabile di pratica' },
+    { id:'se4',text:'Archiviazione nel fascicolo digitale corretto' },
+    { id:'se5',text:'Inserimento scadenza in calendario se necessario' }
+  ]},
+  { id:'seg_out',title:'📤 Posta in Uscita – Comunicazioni & Pratiche', items:[
+    { id:'so1',text:'Verifica completezza documentazione prima dell\'invio' },
+    { id:'so2',text:'Utilizzo template email approvati per comunicazioni standard' },
+    { id:'so3',text:'Invio tramite PEC per comunicazioni con enti e valore legale' },
+    { id:'so4',text:'Archiviazione copia con ricevuta di consegna' }
+  ]},
+  { id:'seg_age',title:'⏰ Agenda & Appuntamenti', items:[
+    { id:'sa1',text:'Aggiornamento calendario scadenze giornaliero' },
+    { id:'sa2',text:'Reminder automatici clienti via email 5 gg prima' },
+    { id:'sa3',text:'Conferma appuntamenti 24h prima' },
+    { id:'sa4',text:'Preparazione fascicolo cliente per appuntamento' }
+  ]},
+  { id:'seg_fas',title:'📁 Gestione Fascicoli Clienti', items:[
+    { id:'sf1',text:'Struttura cartella: Cliente → Lavoratori → Anno → Mese' },
+    { id:'sf2',text:'Nomenclatura file: YYYYMMDD_TipoDoc_NomeLav' },
+    { id:'sf3',text:'Verifica periodica completezza documentazione' },
+    { id:'sf4',text:'Backup mensile archivio digitale' }
+  ]},
+  { id:'seg_work',title:'🗓️ Workflow Giornaliero Segreteria', items:[
+    { id:'sw1',text:'09:00 – Controllo PEC e email, classificazione urgenze' },
+    { id:'sw2',text:'09:30 – Verifica scadenze del giorno e della settimana' },
+    { id:'sw3',text:'10:00 – Risposta comunicazioni clienti / enti in scadenza' },
+    { id:'sw4',text:'11:00 – Gestione pratiche assunzioni / cessazioni in corso' },
+    { id:'sw5',text:'14:00 – Archiviazione documenti ricevuti in mattinata' },
+    { id:'sw6',text:'15:00 – Preparazione pratiche del giorno successivo' },
+    { id:'sw7',text:'17:00 – Aggiornamento registro scadenze e reminder' }
+  ]}
+];
+
+// ── BILANCIO DATA ──
+const BILANCIO_DATA = [
+  {id:'bil1',text:'Utile/perdite esercizio precedente – distribuzione – controllare apertura',area:'Preliminare'},
+  {id:'bil2',text:'Controllare saldi banche – cassa – assegni – Debiti finanziamenti',area:'Controlli Finanziari'},
+  {id:'bil3',text:'Stampa libro cespiti – Ammortamenti – leasing – ratei e risconti',area:'Cespiti'},
+  {id:'bil4',text:'Saldi Clienti e Fornitori – fatture da ricevere e da emettere',area:'Crediti/Debiti'},
+  {id:'bil5',text:'Dipendenti prospetti INAIL – Studi Settore – IRAP – TFR da inserire in N.I.',area:'Personale'},
+  {id:'bil6',text:'Saldi debiti imposte tasse contributi – avvisi bonari e cartelle',area:'Fiscale'},
+  {id:'bil7',text:'Quadri RU ed RS – crediti – bonus – IND 4.0 – Mezzogiorno – dati aiuti di stato RNA',area:'Crediti/Agevolazioni'},
+  {id:'bil8',text:'Storno IVA a ACQ e VED ad erario – controllo con dichiarazione IVA',area:'IVA'},
+  {id:'bil9',text:'Rivalutazione beni d\'impresa – pagamento F24 entro imposte',area:'Rivalutazioni'},
+  {id:'bil10',text:'CCIAA – Tassa Lib. Soc. – Affitti attivi e passivi – IMU – Conc. Demaniale',area:'Tributi Locali'},
+  {id:'bil11',text:'Controllo soglie reati tributari – obbligo revisore – tipo di bilancio ABB.',area:'Compliance'},
+  {id:'bil12',text:'Rimanenze – calcolo Imposte esercizio in Unico – registrazione IRAP e IRES',area:'Imposte'},
+  {id:'bil13',text:'Chiusura anno – trasferimento in GIS bilanci – Distribuzione Soci (RICPROG)',area:'Chiusura'},
+  {id:'bil14',text:'Verbale assemblea – controllo soci – VERIFICA SEMPRE ULTIMA VISURA CAMERALE',area:'Adempimenti Societari'},
+  {id:'bil15',text:'Stampa bilancino al 31.12 esploso – chiusura e trasferimento in GIS BIL',area:'Finalizzazione'}
+];
+
+// ── UNICO DATA ──
+const UNICO_DATA = [
+  {id:'un1',text:'Verifica e stampa imposte pagate anno precedente – saldo e acconto',area:'Imposte Precedenti'},
+  {id:'un2',text:'Stampa F24 acconti pagati',area:'Acconti'},
+  {id:'un3',text:'Verifica eccedenze imposte compensate in F24 anno prec.',area:'Compensazioni'},
+  {id:'un4',text:'Verifica ammortamenti IPER e SUPER',area:'Ammortamenti'},
+  {id:'un5',text:'Rimanenze iniziali e finali',area:'Rimanenze'},
+  {id:'un6',text:'Locazioni cedolare secca',area:'Locazioni'},
+  {id:'un7',text:'Variazione situazione familiari',area:'Anagrafica'},
+  {id:'un8',text:'Variazione situazione immobili',area:'Patrimonio'},
+  {id:'un9',text:'Spese ed oneri Quadro P da cassetto fiscale',area:'Detrazioni'},
+  {id:'un10',text:'Contributi previdenziali titolare',area:'Previdenza'},
+  {id:'un11',text:'Inserimento INPS acconti Quadro RR',area:'INPS'},
+  {id:'un12',text:'Spese telefoniche',area:'Spese Deducibili'},
+  {id:'un13',text:'Spese automobili',area:'Spese Deducibili'},
+  {id:'un14',text:'Spese di rappresentanza',area:'Spese Deducibili'},
+  {id:'un15',text:'Spese varie a deducibilità ridotta',area:'Spese Deducibili'},
+  {id:'un16',text:'Costi del personale',area:'Personale'},
+  {id:'un17',text:'Prospetti – TFR – INAIL – ISA',area:'Prospetti'},
+  {id:'un18',text:'Prospetti dip. deducibilità IRAP',area:'IRAP'},
+  {id:'un19',text:'C.U. lavoratori dipendenti e pensionati',area:'CU'},
+  {id:'un20',text:'C.U. lavoratori autonomi Quadro RH',area:'CU'},
+  {id:'un21',text:'Carica moduli ISA su Unico',area:'ISA'},
+  {id:'un22',text:'Verifica dati ISA variati',area:'ISA'},
+  {id:'un23',text:'Verifica corrispondenza IVA con ricavi liquidazione annuale',area:'Controllo IVA'},
+  {id:'un24',text:'Stampa ammortamenti – calcolo quote e contabilizzazione in GIS',area:'Ammortamenti'},
+  {id:'un25',text:'Stampa bilancino al 31.12',area:'Bilancino'},
+  {id:'un26',text:'Trasferimento dati da GIS',area:'Trasferimento'},
+  {id:'un27',text:'Verifica imposte se fare a rate – inserire flag maggiorazione',area:'Rateizzazione'},
+  {id:'un28',text:'Stampa situazione debitoria',area:'Controllo Debiti'},
+  {id:'un29',text:'Quadri aiuti di stato e Quadro RU',area:'Aiuti di Stato'},
+  {id:'un30',text:'Prospetto perdite',area:'Perdite Fiscali'}
+];
+
+// ── PROCEDURE CHECKLISTS ──
+const PROC_DATA = {
+  ass:['Contatto cliente ricevuto e richiesta documentata','Verifica incentivi e agevolazioni applicabili','Verifica limiti contratti TD e numero proroghe','Verifica obblighi L. 68/99 disabili','Verifica periodi già lavorati dal lavoratore','Definizione tipologia contratto concordata con cliente','Raccolta documenti identità lavoratore','Raccolta codice fiscale e dati anagrafici completi','Acquisizione dati in procedura paghe','Redazione contratto di assunzione','Dichiarazione di responsabilità','TFR 2 – scelta destinazione TFR','Informativa previdenza integrativa','Informativa Privacy GDPR','Trattamento Integrativo (ex bonus 100€)','Piano Formativo Individuale (solo apprendisti)','Invio CO al CPI (giorno prima inizio)','Ricevuta CO archiviata','Richiesta incentivi INPS/INAIL se applicabile','Archiviazione fascicolo completo'],
+  lic:['Contatto cliente e descrizione del caso documentata','Verifica tipologia licenziamento (GMO / giusta causa / disciplinare)','Verifica normativa (art. 18 vs D.Lgs. 23/2015)','Verifica preavviso contrattuale applicabile','Accordo con cliente su gestione (CDL / avvocato)','Redazione lettera contestazione (se disciplinare)','Invio contestazione e attesa risposta (5 gg)','Redazione lettera di licenziamento definitiva','Invio CO cessazione al CPI','Ricevuta CO archiviata','Calcolo liquidazione (TFR, ferie residue, preavviso)','Trasmissione dati per NASpI al lavoratore','Archiviazione fascicolo completo'],
+  inf:['Ricezione segnalazione infortunio da cliente','Richiesta IMMEDIATA certificato medico al cliente','Verifica data certificato medico (START timer 2 giorni)','Raccolta dinamica infortunio (luogo, ora, mansione)','Coinvolgimento RSPP se necessario','Compilazione denuncia INAIL in formato XML','Invio denuncia INAIL entro 2 giorni dal certificato','Upload ricevuta INAIL nel fascicolo','Registrazione nel Registro Infortuni aziendale','Aggiornamento elaborazione paghe (astensione INAIL)','Monitoraggio rientro e valutazione idoneità'],
+  paghe:['Ricezione foglio presenze da tutti i clienti','Verifica anomalie presenze','Acquisizione certificati malattia da portale INPS','Raccolta eventi straordinari (congedi, aspettative)','Inserimento dati variabili nel software paghe','Elaborazione cedolini e quadratura calcoli','Stampa / invio cedolini al cliente','Generazione file UniEmens','Invio UniEmens a INPS (entro 25)','Preparazione F24 contributi e IRPEF','Verifica versamenti F24 (entro 16)','Aggiornamento Libro Unico del Lavoro (LUL)','Archiviazione cedolini e documentazione mensile']
+};
+
+// ── SCADENZARIO 2026 ──
+const SCAD_2026 = [
+  // GENNAIO
+  {id:'s1',month:'GEN',date:'16/01/2026',desc:'Versamento IVA/ritenute/contributi di dicembre 2025',note:'',status:'ok',custom:false},
+  {id:'s2',month:'GEN',date:'16/01/2026',desc:'Versamento ritenute (26%) su dividendi 4° trimestre 2025',note:'',status:'ok',custom:false},
+  {id:'s3',month:'GEN',date:'26/01/2026',desc:'Modello Intrastat operazioni dicembre / 4° trimestre 2025',note:'',status:'ok',custom:false},
+  {id:'s4',month:'GEN',date:'29/01/2026',desc:'Trasmissione Mod. Redditi 2025 o IRAP 2025 tardivo (entro 90 giorni)',note:'Entro 90 giorni dalla scadenza ordinaria del 31/10/2025',status:'ok',custom:false},
+  // FEBBRAIO
+  {id:'s5',month:'FEB',date:'02/02/2026',desc:'Trasmissione dati al sistema Tessera Sanitaria relativi al 2025',note:'Il 31 gennaio è sabato',status:'pending',custom:false},
+  {id:'s6',month:'FEB',date:'02/02/2026',desc:'Dichiarazione e versamento IVA IOSS – dicembre 2025',note:'',status:'pending',custom:false},
+  {id:'s7',month:'FEB',date:'02/02/2026',desc:'Dichiarazione e versamento IVA OSS – 4° trimestre 2025',note:'',status:'pending',custom:false},
+  {id:'s8',month:'FEB',date:'02/02/2026',desc:'Ravvedimento speciale da CPB 2024-2025 (11ª rata)',note:'',status:'pending',custom:false},
+  {id:'s9',month:'FEB',date:'16/02/2026',desc:'Versamento IVA/ritenute/contributi di gennaio',note:'',status:'urgent',custom:false},
+  {id:'s10',month:'FEB',date:'16/02/2026',desc:'Versamento IVS fissi – quarta rata 2025',note:'',status:'urgent',custom:false},
+  {id:'s11',month:'FEB',date:'16/02/2026',desc:'INAIL – Versamento prima rata 2026',note:'',status:'urgent',custom:false},
+  {id:'s12',month:'FEB',date:'20/02/2026',desc:'Enasarco: versamento provvigioni agenti 4° trimestre 2025',note:'',status:'pending',custom:false},
+  {id:'s13',month:'FEB',date:'25/02/2026',desc:'Modello Intrastat operazioni di gennaio (mensili)',note:'',status:'pending',custom:false},
+  // MARZO
+  {id:'s14',month:'MAR',date:'02/03/2026',desc:'LIPE quarto trimestre 2025',note:'Il 28 febbraio è sabato',status:'ok',custom:false},
+  {id:'s15',month:'MAR',date:'02/03/2026',desc:'Versamento imposta di bollo su FE del 4° trimestre 2025',note:'',status:'ok',custom:false},
+  {id:'s16',month:'MAR',date:'02/03/2026',desc:'Ravvedimento speciale da CPB 2024-2025 (12ª rata)',note:'',status:'ok',custom:false},
+  {id:'s17',month:'MAR',date:'15/03/2026',desc:'Ravvedimento speciale da CPB 2025-2026 (1ª di dieci rate mensili)',note:'',status:'ok',custom:false},
+  {id:'s18',month:'MAR',date:'16/03/2026',desc:'Versamento IVA/ritenute/contributi di febbraio',note:'',status:'ok',custom:false},
+  {id:'s19',month:'MAR',date:'16/03/2026',desc:'Versamento saldo IVA 2025',note:'',status:'ok',custom:false},
+  {id:'s20',month:'MAR',date:'16/03/2026',desc:'Consegna e trasmissione dei modelli CU',note:'',status:'ok',custom:false},
+  {id:'s21',month:'MAR',date:'16/03/2026',desc:'Versamento tassa vidimazione libri sociali',note:'',status:'ok',custom:false},
+  {id:'s22',month:'MAR',date:'25/03/2026',desc:'Modello Intrastat operazioni di febbraio (mensili)',note:'',status:'ok',custom:false},
+  {id:'s23',month:'MAR',date:'31/03/2026',desc:'Dichiarazione e versamento IVA IOSS di febbraio',note:'',status:'ok',custom:false},
+  {id:'s24',month:'MAR',date:'31/03/2026',desc:'Ravvedimento speciale da CPB 2024-2025 (13ª rata)',note:'',status:'ok',custom:false},
+  // APRILE
+  {id:'s25',month:'APR',date:'15/04/2026',desc:'Ravvedimento speciale da CPB 2025-2026 (2ª rata)',note:'',status:'ok',custom:false},
+  {id:'s26',month:'APR',date:'16/04/2026',desc:'Versamento IVA/ritenute/contributi di marzo',note:'',status:'ok',custom:false},
+  {id:'s27',month:'APR',date:'16/04/2026',desc:'Versamento ritenute (26%) su dividendi 1° trimestre 2026',note:'',status:'ok',custom:false},
+  {id:'s28',month:'APR',date:'27/04/2026',desc:'Modelli Intrastat – operazioni marzo (mensili) / 1° trimestre (trimestrali)',note:'',status:'ok',custom:false},
+  {id:'s29',month:'APR',date:'30/04/2026',desc:'Invio telematico Mod. IVA 2026',note:'',status:'ok',custom:false},
+  {id:'s30',month:'APR',date:'30/04/2026',desc:'Mod. TR per rimborso/compensazione IVA 1° trimestre 2026',note:'',status:'ok',custom:false},
+  {id:'s31',month:'APR',date:'30/04/2026',desc:'Dichiarazione e versamento IVA OSS del 1° trimestre 2026',note:'',status:'ok',custom:false},
+  {id:'s32',month:'APR',date:'30/04/2026',desc:'Trasmissione CU redditi lavoro autonomo/provvigioni',note:'',status:'ok',custom:false},
+  {id:'s33',month:'APR',date:'30/04/2026',desc:'Presentazione domanda ammissione Rottamazione-quinquies',note:'',status:'ok',custom:false},
+  // MAGGIO
+  {id:'s34',month:'MAG',date:'15/05/2026',desc:'Ravvedimento speciale da CPB 2025-2026 (3ª rata)',note:'',status:'ok',custom:false},
+  {id:'s35',month:'MAG',date:'18/05/2026',desc:'Versamento IVA mese di aprile / 1° trimestre 2026',note:'',status:'ok',custom:false},
+  {id:'s36',month:'MAG',date:'18/05/2026',desc:'Versamento ritenute e contributi mese di aprile',note:'',status:'ok',custom:false},
+  {id:'s37',month:'MAG',date:'18/05/2026',desc:'Versamento IVS fissi – prima rata 2026',note:'',status:'ok',custom:false},
+  {id:'s38',month:'MAG',date:'18/05/2026',desc:'INAIL – Versamento seconda rata 2026',note:'',status:'ok',custom:false},
+  {id:'s39',month:'MAG',date:'20/05/2026',desc:'Enasarco: versamento provvigioni 1° trimestre 2026',note:'',status:'ok',custom:false},
+  {id:'s40',month:'MAG',date:'25/05/2026',desc:'Modelli Intrastat operazioni di aprile (mensili)',note:'',status:'ok',custom:false},
+  {id:'s41',month:'MAG',date:'31/05/2026',desc:'Estromissione immobili imprenditori individuali',note:'',status:'ok',custom:false},
+  // GIUGNO
+  {id:'s42',month:'GIU',date:'01/06/2026',desc:'Comunicazione LIPE – 1° trimestre',note:'Il 31 maggio è domenica',status:'ok',custom:false},
+  {id:'s43',month:'GIU',date:'01/06/2026',desc:'Versamento imposta di bollo su FE del 1° trimestre 2026',note:'',status:'ok',custom:false},
+  {id:'s44',month:'GIU',date:'01/06/2026',desc:'Ravvedimento speciale da CPB 2024-2025 (15ª rata)',note:'',status:'ok',custom:false},
+  {id:'s45',month:'GIU',date:'15/06/2026',desc:'Ravvedimento speciale da CPB 2025-2026 (4ª rata)',note:'',status:'ok',custom:false},
+  {id:'s46',month:'GIU',date:'16/06/2026',desc:'Versamento IVA/ritenute/contributi di maggio',note:'',status:'ok',custom:false},
+  {id:'s47',month:'GIU',date:'16/06/2026',desc:'IMU – Versamento acconto 2026',note:'',status:'ok',custom:false},
+  {id:'s48',month:'GIU',date:'25/06/2026',desc:'Modelli Intrastat operazioni di maggio (mensili)',note:'',status:'ok',custom:false},
+  {id:'s49',month:'GIU',date:'30/06/2026',desc:'IMU – dichiarazione variazioni 2025',note:'',status:'ok',custom:false},
+  {id:'s50',month:'GIU',date:'30/06/2026',desc:'Imposte/contributi Mod. Redditi/IRAP: versamento saldo 2025 e 1° acconto 2026',note:'Unica soluzione o prima rata',status:'ok',custom:false},
+  {id:'s51',month:'GIU',date:'30/06/2026',desc:'CCIAA – Diritto annuale per il 2026',note:'',status:'ok',custom:false},
+  // LUGLIO
+  {id:'s52',month:'LUG',date:'15/07/2026',desc:'Ravvedimento speciale da CPB 2025-2026 (5ª rata)',note:'',status:'ok',custom:false},
+  {id:'s53',month:'LUG',date:'16/07/2026',desc:'Versamento IVA/ritenute/contributi di giugno',note:'',status:'ok',custom:false},
+  {id:'s54',month:'LUG',date:'16/07/2026',desc:'Versamento 2ª rata imposte Redditi/IRAP (per chi ha iniziato il 30/06)',note:'',status:'ok',custom:false},
+  {id:'s55',month:'LUG',date:'16/07/2026',desc:'Versamento ritenute (26%) su dividendi 2° trimestre 2026',note:'',status:'ok',custom:false},
+  {id:'s56',month:'LUG',date:'27/07/2026',desc:'Modelli Intrastat operazioni giugno (mensili) / 2° trimestre (trimestrali)',note:'',status:'ok',custom:false},
+  {id:'s57',month:'LUG',date:'30/07/2026',desc:'CCIAA – Diritto annuale con maggiorazione 0,4%',note:'',status:'ok',custom:false},
+  {id:'s58',month:'LUG',date:'30/07/2026',desc:'Imposte/contributi Redditi/IRAP con maggiorazione 0,4%',note:'',status:'ok',custom:false},
+  {id:'s59',month:'LUG',date:'31/07/2026',desc:'Dichiarazione e versamento IVA OSS del 2° trimestre',note:'',status:'ok',custom:false},
+  {id:'s60',month:'LUG',date:'31/07/2026',desc:'Ravvedimento speciale da CPB 2024-2025 (17ª rata)',note:'',status:'ok',custom:false},
+  {id:'s61',month:'LUG',date:'31/07/2026',desc:'Versamento somme Rottamazione-quinquies (1ª rata)',note:'',status:'ok',custom:false},
+  // AGOSTO
+  {id:'s62',month:'AGO',date:'20/08/2026',desc:'Versamento IVA mese luglio / 2° trimestre',note:'',status:'ok',custom:false},
+  {id:'s63',month:'AGO',date:'20/08/2026',desc:'Versamento ritenute/contributi di luglio',note:'',status:'ok',custom:false},
+  {id:'s64',month:'AGO',date:'20/08/2026',desc:'Versamento IVS fissi – seconda rata 2026',note:'',status:'ok',custom:false},
+  {id:'s65',month:'AGO',date:'20/08/2026',desc:'Versamento rata imposte/contributi Redditi/IRAP 2026',note:'',status:'ok',custom:false},
+  {id:'s66',month:'AGO',date:'20/08/2026',desc:'INAIL – Versamento 3ª rata 2026',note:'',status:'ok',custom:false},
+  {id:'s67',month:'AGO',date:'20/08/2026',desc:'Enasarco: versamento provvigioni 2° trimestre',note:'',status:'ok',custom:false},
+  {id:'s68',month:'AGO',date:'25/08/2026',desc:'Modelli Intrastat operazioni di luglio (mensili)',note:'',status:'ok',custom:false},
+  {id:'s69',month:'AGO',date:'31/08/2026',desc:'Ravvedimento speciale da CPB 2024-2025 (18ª rata)',note:'',status:'ok',custom:false},
+  // SETTEMBRE
+  {id:'s70',month:'SET',date:'15/09/2026',desc:'Ravvedimento speciale da CPB 2025-2026 (7ª rata)',note:'',status:'ok',custom:false},
+  {id:'s71',month:'SET',date:'16/09/2026',desc:'Versamento IVA/ritenute/contributi di agosto',note:'',status:'ok',custom:false},
+  {id:'s72',month:'SET',date:'16/09/2026',desc:'Versamento rata imposte/contributi Redditi/IRAP 2026',note:'',status:'ok',custom:false},
+  {id:'s73',month:'SET',date:'25/09/2026',desc:'Modello Intrastat operazioni di agosto (mensili)',note:'',status:'ok',custom:false},
+  {id:'s74',month:'SET',date:'30/09/2026',desc:'Comunicazione LIPE – 2° trimestre 2026',note:'',status:'ok',custom:false},
+  {id:'s75',month:'SET',date:'30/09/2026',desc:'Versamento imposta di bollo su FE del 2° trimestre 2026',note:'',status:'ok',custom:false},
+  {id:'s76',month:'SET',date:'30/09/2026',desc:'Termine Invio telematico Mod. 730/2026',note:'',status:'ok',custom:false},
+  {id:'s77',month:'SET',date:'30/09/2026',desc:'Versamento 2ª rata Rottamazione-quinquies',note:'',status:'ok',custom:false},
+  // OTTOBRE
+  {id:'s78',month:'OTT',date:'15/10/2026',desc:'Ravvedimento speciale da CPB 2025-2026 (8ª rata)',note:'',status:'ok',custom:false},
+  {id:'s79',month:'OTT',date:'16/10/2026',desc:'Versamento IVA/ritenute/contributi di settembre',note:'',status:'ok',custom:false},
+  {id:'s80',month:'OTT',date:'16/10/2026',desc:'Versamento ritenute (26%) su dividendi 3° trimestre 2026',note:'',status:'ok',custom:false},
+  {id:'s81',month:'OTT',date:'16/10/2026',desc:'Versamento rata imposte/contributi Redditi/IRAP 2026',note:'',status:'ok',custom:false},
+  {id:'s82',month:'OTT',date:'26/10/2026',desc:'Modello Intrastat – settembre (mensili) / 3° trimestre (trimestrali)',note:'',status:'ok',custom:false},
+  // NOVEMBRE
+  {id:'s83',month:'NOV',date:'02/11/2026',desc:'Invio telematico Mod. CU 2026 con redditi esenti/esclusi',note:'Il 31 ottobre è sabato',status:'ok',custom:false},
+  {id:'s84',month:'NOV',date:'02/11/2026',desc:'Dichiarazione e versamento IVA OSS del 3° trimestre',note:'',status:'ok',custom:false},
+  {id:'s85',month:'NOV',date:'02/11/2026',desc:'Presentazione modello 770/2026',note:'',status:'ok',custom:false},
+  {id:'s86',month:'NOV',date:'02/11/2026',desc:'Trasmissione modelli Redditi ed IRAP 2026',note:'',status:'ok',custom:false},
+  {id:'s87',month:'NOV',date:'02/11/2026',desc:'Ravvedimento speciale da CPB 2024-2025 (20ª rata)',note:'',status:'ok',custom:false},
+  {id:'s88',month:'NOV',date:'16/11/2026',desc:'Ravvedimento speciale da CPB 2025-2026 (9ª rata)',note:'',status:'ok',custom:false},
+  {id:'s89',month:'NOV',date:'16/11/2026',desc:'Versamento IVA mese ottobre / 3° trimestre',note:'',status:'ok',custom:false},
+  {id:'s90',month:'NOV',date:'16/11/2026',desc:'Versamento ritenute e contributi mese di ottobre',note:'',status:'ok',custom:false},
+  {id:'s91',month:'NOV',date:'16/11/2026',desc:'Versamento IVS fissi – terza rata 2026',note:'',status:'ok',custom:false},
+  {id:'s92',month:'NOV',date:'16/11/2026',desc:'INAIL – Versamento quarta rata 2026',note:'',status:'ok',custom:false},
+  {id:'s93',month:'NOV',date:'20/11/2026',desc:'Enasarco: versamento provvigioni 3° trimestre',note:'',status:'ok',custom:false},
+  {id:'s94',month:'NOV',date:'25/11/2026',desc:'Modello Intrastat operazioni di ottobre (mensili)',note:'',status:'ok',custom:false},
+  {id:'s95',month:'NOV',date:'30/11/2026',desc:'Imposte/contributi Redditi/IRAP: versamento 2° acconto 2026',note:'',status:'ok',custom:false},
+  {id:'s96',month:'NOV',date:'30/11/2026',desc:'Comunicazione LIPE – 3° trimestre 2026',note:'',status:'ok',custom:false},
+  {id:'s97',month:'NOV',date:'30/11/2026',desc:'Versamento imposta di bollo su FE del 3° trimestre 2026',note:'',status:'ok',custom:false},
+  {id:'s98',month:'NOV',date:'30/11/2026',desc:'Versamento 3ª rata Rottamazione-quinquies',note:'',status:'ok',custom:false},
+  // DICEMBRE
+  {id:'s99',month:'DIC',date:'15/12/2026',desc:'Ravvedimento speciale da CPB 2025-2026 (ultima di dieci rate)',note:'',status:'ok',custom:false},
+  {id:'s100',month:'DIC',date:'16/12/2026',desc:'Versamento IVA/ritenute/contributi di novembre',note:'',status:'ok',custom:false},
+  {id:'s101',month:'DIC',date:'16/12/2026',desc:'IMU – Versamento saldo 2026',note:'',status:'ok',custom:false},
+  {id:'s102',month:'DIC',date:'16/12/2026',desc:'Versamento ultima rata imposte, IRAP e contributi Mod. Redditi 2026',note:'',status:'ok',custom:false},
+  {id:'s103',month:'DIC',date:'28/12/2026',desc:'Modello Intrastat operazioni di novembre (mensili)',note:'',status:'ok',custom:false},
+  {id:'s104',month:'DIC',date:'28/12/2026',desc:'Versamento Acconto IVA 2026',note:'',status:'ok',custom:false},
+  {id:'s105',month:'DIC',date:'31/12/2026',desc:'Dichiarazione e versamento IVA IOSS – novembre',note:'',status:'ok',custom:false},
+  {id:'s106',month:'DIC',date:'31/12/2026',desc:'Ravvedimento speciale da CPB 2024-2025 (22ª rata)',note:'',status:'ok',custom:false}
+];
+
+const MONTH_NAMES = {GEN:'Gennaio',FEB:'Febbraio',MAR:'Marzo',APR:'Aprile',MAG:'Maggio',GIU:'Giugno',LUG:'Luglio',AGO:'Agosto',SET:'Settembre',OTT:'Ottobre',NOV:'Novembre',DIC:'Dicembre'};
+const MONTH_ORDER = ['GEN','FEB','MAR','APR','MAG','GIU','LUG','AGO','SET','OTT','NOV','DIC'];
+
+// ── EMAIL TEMPLATES ──
+let emailTemplates = [
+  {id:1,title:'Richiesta Documenti Standard',type:'',subject:'Richiesta documentazione contabile – [RAGIONE SOCIALE] – [MESE/ANNO]',body:'Gentile Cliente,\n\nin riferimento alla tenuta della contabilità per il periodo [MESE/ANNO], Le chiediamo cortesemente di trasmetterci la seguente documentazione:\n\n□ Fatture attive emesse\n□ Fatture passive ricevute\n□ Estratti conto bancari\n□ Movimenti cassa\n□ Altri documenti rilevanti\n\nScadenza consegna: [DATA]\n\nRestiamo a disposizione per qualsiasi chiarimento.\n\nCordiali saluti,\nStudio Solomita'},
+  {id:2,title:'Sollecito Documenti (1° livello)',type:'',subject:'Promemoria documentazione – [RAGIONE SOCIALE]',body:'Gentile Cliente,\n\nLe ricordiamo gentilmente che siamo ancora in attesa della documentazione richiesta in data [DATA RICHIESTA] per il periodo [MESE/ANNO].\n\nPer permetterci di completare le elaborazioni nei tempi previsti, Le chiediamo di trasmetterci quanto prima i documenti mancanti.\n\nSiamo a disposizione per qualsiasi supporto necessario.\n\nCordiali saluti,\nStudio Solomita'},
+  {id:3,title:'Alert Scadenza Fiscale',type:'urgente',subject:'IMPORTANTE – Scadenza [TIPO ADEMPIMENTO] – [DATA]',body:'Gentile Cliente,\n\nLe ricordiamo che in data [DATA SCADENZA] scade il termine per:\n\n[DESCRIZIONE ADEMPIMENTO]\n\nImporto da versare: € [IMPORTO]\n\nAbbiamo già predisposto l\'F24 per il pagamento. Le chiediamo di verificare la disponibilità sul conto corrente.\n\nCordiali saluti,\nStudio Solomita'},
+  {id:4,title:'Risposta Quesito Standard',type:'',subject:'Re: [OGGETTO QUESITO]',body:'Gentile Cliente,\n\nin riferimento al Suo quesito del [DATA], Le forniamo il seguente riscontro:\n\n[RISPOSTA DETTAGLIATA]\n\nNormativa di riferimento: [RIFERIMENTI NORMATIVI]\n\nRimaniamo a disposizione per ulteriori chiarimenti.\n\nCordiali saluti,\nStudio Solomita'},
+  {id:5,title:'Comunicazione Assunzione',type:'lavoro',subject:'CO Assunzione – [NOME LAVORATORE] – [DATA INIZIO]',body:'Gentile Cliente,\n\nabbiamo provveduto ad inviare la Comunicazione Obbligatoria al CPI per l\'assunzione di:\n\nLavoratore: [NOME COGNOME]\nData inizio: [DATA]\nTipologia: [TIPO CONTRATTO]\nMansione: [MANSIONE]\n\nLa ricevuta della CO è allegata al presente messaggio.\n\nCordiali saluti,\nStudio Solomita'},
+  {id:6,title:'Alert Scadenza INAIL Infortuni',type:'urgente',subject:'URGENTE – Denuncia INAIL – Scadenza 2 Giorni',body:'Gentile Cliente,\n\nIl certificato medico dell\'infortunio occorso al lavoratore [NOME LAVORATORE] è stato ricevuto il [DATA CERTIFICATO].\n\nLA DENUNCIA INAIL SCADE ENTRO: [DATA SCADENZA]\n\nNecessitiamo IMMEDIATAMENTE di:\n□ Descrizione dinamica dell\'infortunio\n□ Eventuali testimoni\n□ Segnalazione al RSPP\n\nCordiali saluti,\nStudio Solomita'},
+  {id:7,title:'Invio Cedolini Mensili',type:'lavoro',subject:'Cedolini Paga – [MESE/ANNO] – [RAGIONE SOCIALE]',body:'Gentile Cliente,\n\nLe inviamo i cedolini di pagamento relativi al mese di [MESE/ANNO].\n\n□ N. cedolini elaborati: [NUMERO]\n□ Totale netto da erogare: € [IMPORTO]\n□ F24 da versare entro il 16: € [IMPORTO F24]\n□ UniEmens inviato: □ SI □ NO\n\nCordiali saluti,\nStudio Solomita'}
+];
+let nextEmailId = 8;
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+
+let checkedState = {};
+let scadState = {};  // scadenza id → done
+let customScadId = 1000;
+
+// ═══════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════
+
+const panelTitles = {
+  dashboard:'Dashboard',scadenze:'Scadenzario Fiscale 2026',daily:'Routine Operativa Quotidiana',
+  segreteria:'Gestione Segreteria',bilancio:'Bilancio di Esercizio',unico:'Dichiarazione Unico 2025',
+  assunzioni:'Procedura Assunzioni',proroghe:'Proroghe & Trasformazioni',licenziamenti:'Licenziamenti',
+  infortuni:'Infortuni / Malattie Professionali',paghe:'Elaborazione Paghe',
+  disciplinare:'Procedimenti Disciplinari',archiviazione:'Archiviazione Documentale',
+  email:'Template Email / PEC',kpi:'KPI & Report Studio'
+};
+
+function showPanel(id, navEl) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  document.getElementById('page-title').textContent = panelTitles[id]||id;
+  if(navEl) navEl.classList.add('active');
+}
+
+function switchTab(btn, tabId) {
+  const panel = btn.closest('.panel');
+  panel.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  panel.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════════
+// CHECKLIST HELPERS
+// ═══════════════════════════════════════════════════════
+
+function countChecked(ids) { return ids.filter(id=>checkedState[id]).length; }
+
+function updateDashboardStats() {
+  const dailyIds = DAILY_DATA.flatMap(s=>s.items.map(i=>i.id));
+  const segIds = SEG_DATA.flatMap(s=>s.items.map(i=>i.id));
+  const bilDone = Object.keys(cartellinaState).filter(k=>k.startsWith('bil_')&&cartellinaState[k]).length;
+  const unDone = Object.keys(cartellinaState).filter(k=>k.startsWith('un_')&&cartellinaState[k]).length;
+  const bilTotal = 15, unTotal = 30;
+  const allProcIds = Object.entries(PROC_DATA).flatMap(([k,arr])=>arr.map((_,i)=>k+'_'+i));
+  const allIds = [...dailyIds,...segIds,...allProcIds];
+
+  const d = dailyIds.length, dd = countChecked(dailyIds);
+  const b = bilTotal, bd = bilDone;
+  const u = unTotal, ud = unDone;
+  const allChecked = countChecked(allIds) + bd + ud;
+  const allCount = allIds.length + b + u;
+
+  const pct = n => n?Math.round(n)+'%':'0%';
+  const fraction = (done,total) => total ? Math.round(done/total*100) : 0;
+
+  set('stat-daily-pct', pct(fraction(dd,d)));
+  set('spb-daily','', fraction(dd,d)+'%','width');
+  set('stat-daily-sub', dd+'/'+d+' completate');
+  set('stat-bilancio-pct', pct(fraction(bd,b)));
+  set('spb-bilancio','', fraction(bd,b)+'%','width');
+  set('stat-bilancio-sub', bd+'/'+b+' completate');
+  set('stat-unico-pct', pct(fraction(ud,u)));
+  set('spb-unico','', fraction(ud,u)+'%','width');
+  set('stat-unico-sub', ud+'/'+u+' completate');
+  set('stat-global-pct', pct(fraction(allChecked, allCount)));
+  set('spb-global','', fraction(allChecked, allCount)+'%','width');
+}
+
+function set(id, txt, styleVal, styleProp) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  if(txt !== undefined && styleProp === undefined) el.textContent = txt;
+  if(styleProp && styleVal !== undefined) el.style[styleProp] = styleVal;
+}
+
+function updateGP(key, ids, gpId, gpPctId) {
+  const done = countChecked(ids);
+  const pct = ids.length ? Math.round(done/ids.length*100) : 0;
+  const gp = document.getElementById(gpId); if(gp) gp.style.width = pct+'%';
+  const gpp = document.getElementById(gpPctId); if(gpp) gpp.textContent = pct+'%';
+}
+
+function updateSectionBadge(secId, ids) {
+  const b = document.querySelector('[data-sb="'+secId+'"]');
+  if(!b) return;
+  const done = countChecked(ids), total = ids.length;
+  b.textContent = done+'/'+total;
+  b.className = 'chl-badge'+(done===total&&total>0?' done':'');
+}
+
+function toggleItem(id, gpKey, gpId, gpPctId, secId, secIds) {
+  checkedState[id] = !checkedState[id];
+  const el = document.getElementById('ci-'+id);
+  if(el) {
+    el.classList.toggle('done', checkedState[id]);
+    const cb = el.querySelector('input[type=checkbox]');
+    if(cb) cb.checked = checkedState[id];
+  }
+  if(secId && secIds) updateSectionBadge(secId, secIds);
+  if(gpKey==='daily') { updateGP('daily', DAILY_DATA.flatMap(s=>s.items.map(i=>i.id)),'gp-daily','gp-daily-pct'); }
+  else if(gpKey==='segreteria') { updateGP('segreteria', SEG_DATA.flatMap(s=>s.items.map(i=>i.id)),'gp-segreteria','gp-segreteria-pct'); }
+  else if(gpKey==='bilancio') { updateGP('bilancio', BILANCIO_DATA.map(i=>i.id),'gp-bilancio','gp-bilancio-pct'); }
+  else if(gpKey==='unico') { updateGP('unico', UNICO_DATA.map(i=>i.id),'gp-unico','gp-unico-pct'); }
+  else if(gpKey==='ass') { updateGP('ass', PROC_DATA.ass.map((_,i)=>'ass_'+i),'gp-ass','gp-ass-pct'); }
+  else if(gpKey==='lic') { updateGP('lic', PROC_DATA.lic.map((_,i)=>'lic_'+i),'gp-lic','gp-lic-pct'); }
+  else if(gpKey==='inf') { updateGP('inf', PROC_DATA.inf.map((_,i)=>'inf_'+i),'gp-inf','gp-inf-pct'); }
+  else if(gpKey==='paghe') { updateGP('paghe', PROC_DATA.paghe.map((_,i)=>'paghe_'+i),'gp-paghe','gp-paghe-pct'); }
+  updateDashboardStats();
+}
+
+// ── RENDER SECTION CHECKLIST (generic) ──
+function renderSectionChecklist(container, sections, gpKey) {
+  container.innerHTML = '';
+  sections.forEach(sec => {
+    const ids = sec.items.map(i=>i.id);
+    const done = countChecked(ids);
+    const div = document.createElement('div');
+    div.className = 'checklist-section';
+    div.innerHTML = `
+      <div class="checklist-section-header" onclick="toggleSection('${sec.id}')">
+        <span class="checklist-section-title">${sec.title}</span>
+        <span style="display:flex;align-items:center;gap:6px">
+          <span class="chl-badge" data-sb="${sec.id}">${done}/${ids.length}</span>
+          <span class="chevron" id="chev-${sec.id}">▶</span>
+        </span>
+      </div>
+      <div class="checklist-body" id="sec-${sec.id}" style="display:none">
+        ${sec.items.map(item=>`
+          <div class="checklist-item ${checkedState[item.id]?'done':''}" id="ci-${item.id}" onclick="toggleItem('${item.id}','${gpKey}',null,null,'${sec.id}',[${ids.map(x=>"'"+x+"'").join(',')}])">
+            <input type="checkbox" ${checkedState[item.id]?'checked':''} onclick="event.stopPropagation();toggleItem('${item.id}','${gpKey}',null,null,'${sec.id}',[${ids.map(x=>"'"+x+"'").join(',')}])">
+            <span class="checklist-item-text">${item.text}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+// ── RENDER FLAT CHECKLIST (bilancio, unico, procedure) ──
+function renderFlatChecklist(containerId, items, gpKey, color) {
+  const wrap = document.querySelector('#'+containerId+' .card-body');
+  if(!wrap) { document.getElementById(containerId).innerHTML = `<div class="card"><div class="card-body"></div></div>`; renderFlatChecklist(containerId,items,gpKey,color); return; }
+  wrap.innerHTML = items.map((item, idx) => {
+    const id = item.id || (gpKey+'_'+idx);
+    const text = item.text || item;
+    const area = item.area;
+    return `<div class="checklist-item ${checkedState[id]?'done':''}" id="ci-${id}" onclick="toggleItem('${id}','${gpKey}')">
+      <input type="checkbox" ${checkedState[id]?'checked':''} onclick="event.stopPropagation();toggleItem('${id}','${gpKey}')">
+      <span class="checklist-item-text">
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:${color};color:#fff;font-size:9.5px;font-weight:700;margin-right:7px;flex-shrink:0">${idx+1}</span>
+        ${text}${area?`<span class="item-area-tag">${area}</span>`:''}
+      </span>
+    </div>`;
+  }).join('');
+}
+
+function renderProcChecklist(containerId, procKey, gpId, gpPctId) {
+  const items = PROC_DATA[procKey];
+  const el = document.getElementById(containerId);
+  el.innerHTML = `<div class="card"><div class="card-body">${items.map((text,i)=>{
+    const id = procKey+'_'+i;
+    return `<div class="checklist-item ${checkedState[id]?'done':''}" id="ci-${id}" onclick="toggleItem('${id}','${procKey}')">
+      <input type="checkbox" ${checkedState[id]?'checked':''} onclick="event.stopPropagation();toggleItem('${id}','${procKey}')">
+      <span class="checklist-item-text">${text}</span>
+    </div>`;
+  }).join('')}</div></div>`;
+}
+
+function toggleSection(id) {
+  const body = document.getElementById('sec-'+id);
+  const chev = document.getElementById('chev-'+id);
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  if(chev) chev.classList.toggle('open', !isOpen);
+}
+
+function resetChecklist(key) {
+  let ids;
+  if(key==='daily') ids = DAILY_DATA.flatMap(s=>s.items.map(i=>i.id));
+  else if(key==='segreteria') ids = SEG_DATA.flatMap(s=>s.items.map(i=>i.id));
+  else if(key==='bilancio') ids = BILANCIO_DATA.map(i=>i.id);
+  else if(key==='unico') ids = UNICO_DATA.map(i=>i.id);
+  if(!ids) return;
+  ids.forEach(id=>{ checkedState[id]=false; });
+  if(key==='daily') renderSectionChecklist(document.getElementById('daily-sections'), DAILY_DATA, 'daily');
+  else if(key==='segreteria') renderSectionChecklist(document.getElementById('segreteria-sections'), SEG_DATA, 'segreteria');
+  else if(key==='bilancio') renderFlatChecklist('bilancio-items', BILANCIO_DATA, 'bilancio', 'var(--accent2)');
+  else if(key==='unico') renderFlatChecklist('unico-items', UNICO_DATA, 'unico', 'var(--gold)');
+  if(key==='daily') updateGP('daily', DAILY_DATA.flatMap(s=>s.items.map(i=>i.id)),'gp-daily','gp-daily-pct');
+  else if(key==='segreteria') updateGP('segreteria', SEG_DATA.flatMap(s=>s.items.map(i=>i.id)),'gp-segreteria','gp-segreteria-pct');
+  else if(key==='bilancio') updateGP('bilancio', BILANCIO_DATA.map(i=>i.id),'gp-bilancio','gp-bilancio-pct');
+  else if(key==='unico') updateGP('unico', UNICO_DATA.map(i=>i.id),'gp-unico','gp-unico-pct');
+  updateDashboardStats();
+}
+
+function resetProcChecklist(key) {
+  const ids = PROC_DATA[key].map((_,i)=>key+'_'+i);
+  ids.forEach(id=>{ checkedState[id]=false; });
+  renderProcChecklist('chk-'+key+'-container', key, 'gp-'+key, 'gp-'+key+'-pct');
+  updateGP(key, ids, 'gp-'+key, 'gp-'+key+'-pct');
+  updateDashboardStats();
+}
+
+// ═══════════════════════════════════════════════════════
+// SCADENZARIO
+// ═══════════════════════════════════════════════════════
+
+function getScadenzaDate(dateStr) {
+  const parts = dateStr.split('/');
+  return new Date(parts[2], parts[1]-1, parts[0]);
+}
+
+function renderScadenzario() {
+  const container = document.getElementById('scadenzario-list');
+  const filter = document.getElementById('scad-filter').value;
+  const allItems = SCAD_2026.slice();
+  const months = filter ? [filter] : MONTH_ORDER;
+
+  container.innerHTML = '';
+  months.forEach(month => {
+    const items = allItems.filter(s=>s.month===month);
+    if(!items.length) return;
+    const div = document.createElement('div');
+    div.className = 'month-group';
+    const done = items.filter(s=>scadState[s.id]).length;
+    div.innerHTML = `
+      <div class="month-header">
+        <span>${MONTH_NAMES[month]}</span>
+        <span class="month-count">${done}/${items.length} completate</span>
+      </div>
+      <div class="month-body">
+        ${items.map(s=>`
+          <div class="scad-row ${scadState[s.id]?'done':''}" id="scad-${s.id}" onclick="toggleScad('${s.id}')">
+            <input type="checkbox" ${scadState[s.id]?'checked':''} onclick="event.stopPropagation();toggleScad('${s.id}')">
+            <span class="scad-row-date">${s.date}</span>
+            <span class="scad-row-text">${s.desc}${s.note?`<br><span style="font-size:10.5px;color:#9ab5cb">${s.note}</span>`:''}${s.custom?'<span style="font-size:9px;margin-left:6px;padding:1px 5px;background:#e8f1fa;color:var(--accent);border-radius:6px">personalizzata</span>':''}</span>
+            <span class="scad-row-badge ${s.status==='urgent'?'status-urgent':s.status==='pending'?'status-pending':'status-ok'}">${s.status==='urgent'?'Urgente':s.status==='pending'?'In Scadenza':'Pianificato'}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    container.appendChild(div);
+  });
+
+  // Update topbar badges
+  const urgCount = SCAD_2026.filter(s=>s.status==='urgent'&&!scadState[s.id]).length;
+  const pendCount = SCAD_2026.filter(s=>s.status==='pending'&&!scadState[s.id]).length;
+  document.getElementById('badge-urgenti').textContent = urgCount+' Urgenti';
+  document.getElementById('badge-scad').textContent = pendCount+' In Scadenza';
+}
+
+function toggleScad(id) {
+  scadState[id] = !scadState[id];
+  renderScadenzario();
+  renderDashScadPreview();
+}
+
+function filterScadenze() { renderScadenzario(); }
+
+function toggleAddScad() {
+  const w = document.getElementById('add-scad-form-wrap');
+  w.style.display = w.style.display==='none' ? 'block' : 'none';
+}
+
+function saveNewScadenza() {
+  const d = document.getElementById('ns-date').value;
+  const desc = document.getElementById('ns-desc').value.trim();
+  const note = document.getElementById('ns-note').value.trim();
+  const status = document.getElementById('ns-status').value;
+  if(!d||!desc) { alert('Inserire data e descrizione.'); return; }
+  const parts = d.split('-');
+  const dateStr = parts[2]+'/'+parts[1]+'/'+parts[0];
+  const monthIdx = parseInt(parts[1])-1;
+  const month = MONTH_ORDER[monthIdx];
+  SCAD_2026.push({id:'c'+customScadId++,month,date:dateStr,desc,note,status,custom:true});
+  SCAD_2026.sort((a,b)=>getScadenzaDate(a.date)-getScadenzaDate(b.date));
+  document.getElementById('ns-date').value='';
+  document.getElementById('ns-desc').value='';
+  document.getElementById('ns-note').value='';
+  document.getElementById('add-scad-form-wrap').style.display='none';
+  renderScadenzario();
+  renderDashScadPreview();
+}
+
+function renderDashScadPreview() {
+  const cont = document.getElementById('dash-scadenze-preview');
+  if(!cont) return;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const limit = new Date(); limit.setDate(limit.getDate()+14);
+  const upcoming = SCAD_2026.filter(s=>{
+    if(scadState[s.id]) return false;
+    const d = getScadenzaDate(s.date);
+    return d >= today && d <= limit;
+  }).slice(0,5);
+  if(!upcoming.length) { cont.innerHTML = '<div style="font-size:12px;color:#9ab5cb;padding:10px 0">Nessuna scadenza nei prossimi 14 giorni.</div>'; return; }
+  cont.innerHTML = upcoming.map(s=>`
+    <div class="scad-item">
+      <div class="scad-date"><div class="day">${s.date.split('/')[0]}</div><div class="month">${MONTH_NAMES[s.month]?.substring(0,3)||s.month}</div></div>
+      <div class="scad-info"><h4>${s.desc.substring(0,55)}${s.desc.length>55?'…':''}</h4></div>
+      <span class="scad-status ${s.status==='urgent'?'status-urgent':s.status==='pending'?'status-pending':'status-ok'}">${s.status==='urgent'?'Urgente':s.status==='pending'?'In scad.':'Ok'}</span>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// EMAIL TEMPLATES
+// ═══════════════════════════════════════════════════════
+
+function renderEmailTemplates() {
+  const cont = document.getElementById('email-templates-list');
+  const cnt = document.getElementById('template-count');
+  if(cnt) cnt.textContent = emailTemplates.length + ' template';
+  cont.innerHTML = emailTemplates.map(t=>`
+    <div class="email-card" id="email-${t.id}">
+      <div class="email-header">
+        <h4>✉️ ${t.title}</h4>
+        <div class="email-header-actions">
+          <span class="email-type ${t.type}">${t.type==='lavoro'?'Area Lavoro':t.type==='urgente'?'Urgente':'Generale'}</span>
+          <button class="edit-btn" onclick="editTemplate(${t.id})">✏️</button>
+          <button class="copy-btn" onclick="copyTemplate(${t.id},this)">Copia</button>
+          <button class="delete-btn" onclick="deleteTemplate(${t.id})">✕</button>
+        </div>
+      </div>
+      <div class="email-meta"><div class="email-meta-row"><label>Oggetto:</label><span>${t.subject}</span></div></div>
+      <div class="email-body" id="body-${t.id}">${t.body}</div>
+    </div>
+  `).join('');
+}
+
+function copyTemplate(id, btn) {
+  const t = emailTemplates.find(e=>e.id===id); if(!t) return;
+  navigator.clipboard.writeText(`OGGETTO: ${t.subject}\n\n${t.body}`).then(()=>{
+    const orig=btn.textContent; btn.textContent='Copiato ✓'; setTimeout(()=>btn.textContent=orig,2000);
+  });
+}
+function deleteTemplate(id) {
+  if(!confirm('Eliminare questo template?')) return;
+  emailTemplates = emailTemplates.filter(e=>e.id!==id);
+  renderEmailTemplates();
+}
+function editTemplate(id) {
+  const t = emailTemplates.find(e=>e.id===id); if(!t) return;
+  const bodyEl = document.getElementById('body-'+id);
+  const btn = document.querySelector(`#email-${id} .edit-btn`);
+  if(bodyEl.contentEditable==='true') {
+    t.body = bodyEl.innerText; bodyEl.contentEditable='false'; if(btn) btn.textContent='✏️';
+  } else {
+    bodyEl.contentEditable='true'; bodyEl.focus(); if(btn) btn.textContent='💾';
+  }
+}
+function toggleAddEmailForm() {
+  const f = document.getElementById('add-email-form');
+  f.style.display = f.style.display==='none'?'block':'none';
+}
+function saveNewTemplate() {
+  const title = document.getElementById('new-email-title').value.trim();
+  const type = document.getElementById('new-email-type').value;
+  const subject = document.getElementById('new-email-subject').value.trim();
+  const body = document.getElementById('new-email-body').value.trim();
+  if(!title||!subject||!body) { alert('Compilare tutti i campi.'); return; }
+  emailTemplates.push({id:nextEmailId++,title,type,subject,body});
+  ['new-email-title','new-email-subject','new-email-body'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('add-email-form').style.display='none';
+  renderEmailTemplates();
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+
+function init() {
+  startClock();
+  // Setta stato scadenze per mesi già passati come "ok" (non urgente)
+  const today = new Date(); today.setHours(0,0,0,0);
+  const inWeek = new Date(); inWeek.setDate(inWeek.getDate()+7);
+  const in30 = new Date(); in30.setDate(in30.getDate()+30);
+  SCAD_2026.forEach(s => {
+    const d = getScadenzaDate(s.date);
+    if(d < today) { s.status = 'ok'; }
+    else if(d <= inWeek) { s.status = 'urgent'; }
+    else if(d <= in30) { s.status = 'pending'; }
+    else { s.status = 'ok'; }
+  });
+
+  renderSectionChecklist(document.getElementById('daily-sections'), DAILY_DATA, 'daily');
+  renderSectionChecklist(document.getElementById('segreteria-sections'), SEG_DATA, 'segreteria');
+  renderProcChecklist('chk-ass-container', 'ass', 'gp-ass', 'gp-ass-pct');
+  renderProcChecklist('chk-lic-container', 'lic', 'gp-lic', 'gp-lic-pct');
+  renderProcChecklist('chk-inf-container', 'inf', 'gp-inf', 'gp-inf-pct');
+  renderProcChecklist('chk-paghe-container', 'paghe', 'gp-paghe', 'gp-paghe-pct');
+  renderEmailTemplates();
+  renderScadenzario();
+  renderDashScadPreview();
+  updateDashboardStats();
+  // Cartelline fiscali
+  renderBilChecklist();
+  renderUnChecklist();
+  renderUnF24();
+}
+
+// ═══════════════════════════════════════════════════════
+// CARTELLINA BILANCIO & UNICO — DATA & RENDER
+// ═══════════════════════════════════════════════════════
+
+const BIL_ITEMS = [
+  {n:1, desc:'Utile / perdite esercizio precedente\nDistribuzione — controllare apertura', cmd:''},
+  {n:2, desc:'Controllare saldi banche – cassa – assegni – Debiti finanziamenti', cmd:''},
+  {n:3, desc:'Stampa libro cespiti – Ammortamenti – leasing – ratei e risconti –\nmanutenzione e riparazione – super e iper ammortamento', cmd:'REGCES\nSCESIT\nCMANRIP\nLEAST\nLEAS'},
+  {n:4, desc:'Saldi Clienti e Fornitori\nFatture da ricevere e fatture da emettere', cmd:''},
+  {n:5, desc:'Dipendenti: prospetti INAIL – Studi Settore – IRAP – TFR da inserire in N.I.\nControllare debiti: se si chiudono rimane aperto mese di dicembre', cmd:''},
+  {n:6, desc:'Saldi debiti: imposte – tasse – contributi – avvisi bonari e cartelle', cmd:''},
+  {n:7, desc:'Quadri RU ed RS: crediti – bonus – IND 4.0 – Mezzogiorno e vari\nInserire dati aiuti di stato – prelevare su RNA', cmd:''},
+  {n:8, desc:'Storno IVA a ACQ e VED ad erario\nControllo con dichiarazione IVA', cmd:'PRES.'},
+  {n:9, desc:"Rivalutazione beni d'impresa\nPagamento F24 entro imposte", cmd:''},
+  {n:10, desc:'CCIAA – Tassa Lib. Soc. – Affitti attivi e passivi – IMU – Conc. Demaniale', cmd:''},
+  {n:11, desc:'Controllo soglie reati tributari\nObbligo revisore e tipo di bilancio', cmd:'ABB.'},
+  {n:12, desc:'Rimanenze – Calcolo imposte esercizio in Unico\nRegistrazione IRAP e IRES', cmd:''},
+  {n:13, desc:'Chiusura anno – Trasferimento in GIS bilanci – Distribuzione Soci\n(Ricostruzione progressivi)', cmd:'RICPROG'},
+  {n:14, desc:'Verbale assemblea – Controllo soci – Dicitura data trasmissione\n⚠ VERIFICA SEMPRE ULTIMA VISURA CAMERALE', cmd:''},
+  {n:15, desc:'Stampa bilancino al 31.12 esploso\nChiusura e trasferimento in GIS BIL', cmd:'GIS BIL'},
+];
+
+const UN_ITEMS = [
+  'Verifica e stampa imposte pagate anno precedente — saldo e acconto',
+  'Stampa F24 acconti pagati',
+  'Verifica eccedenze imposte compensate in F24 anno precedente',
+  'Verifica ammortamenti IPER e SUPER',
+  'Rimanenze iniziali e finali',
+  'Locazioni cedolare secca',
+  'Variazione situazione familiari',
+  'Variazione situazione immobili',
+  'Spese ed oneri Quadro P — da cassetto fiscale',
+  'Contributi previdenziali titolare',
+  'Inserimento INPS acconti Quadro RR',
+  'Spese telefoniche',
+  'Spese automobili',
+  'Spese di rappresentanza',
+  'Spese varie a deducibilità ridotta',
+  'Costi del personale',
+  'Prospetti — TFR – INAIL – ISA',
+  'Prospetti dipendenti deducibilità IRAP',
+  'C.U. lavoratori dipendenti e pensionati',
+  'C.U. lavoratori autonomi — Quadro RH',
+  'Carica moduli ISA su Unico',
+  'Verifica dati ISA variati',
+  'Verifica corrispondenza IVA con ricavi liquidazione annuale',
+  'Stampa ammortamenti — calcolo quote e contabilizzazione in GIS',
+  'Stampa bilancino al 31.12.2024',
+  'Trasferimento dati da GIS',
+  'Verifica imposte — se fare a rate inserire flag maggiorazione',
+  'Stampa situazione debitoria',
+  'Quadri aiuti di stato e Quadro RU',
+  'Prospetto perdite',
+];
+
+const UN_F24 = [
+  {cod:'4001',anno:'2023',sog:'Persone fisiche',trib:'SALDO IRPEF'},
+  {cod:'4033',anno:'2024',sog:'Persone fisiche',trib:'1° ACCONTO IRPEF'},
+  {cod:'4034',anno:'2024',sog:'Persone fisiche',trib:'2° ACCONTO IRPEF'},
+  {cod:'3850',anno:'2024',sog:'Imprese',trib:'CCIAA'},
+  {cod:'3800',anno:'2023',sog:'PF / Persone giuridiche',trib:'IRAP SALDO'},
+  {cod:'3812',anno:'2024',sog:'PF / Persone giuridiche',trib:'1° ACCONTO IRAP'},
+  {cod:'3813',anno:'2024',sog:'PF / Persone giuridiche',trib:'2° ACCONTO IRAP'},
+  {cod:'3801',anno:'2023',sog:'Persone fisiche',trib:'ADD. REG. IRPEF'},
+  {cod:'3844',anno:'2023',sog:'Persone fisiche',trib:'SALDO ADD. COM. IRPEF'},
+  {cod:'3843',anno:'2024',sog:'Persone fisiche',trib:'ACC. ADD. COMUNALE IRPEF'},
+  {cod:'2003',anno:'2023',sog:'Persone giuridiche',trib:'SALDO IRES'},
+  {cod:'2001',anno:'2024',sog:'Persone giuridiche',trib:'1° ACCONTO IRES'},
+  {cod:'2002',anno:'2024',sog:'Persone giuridiche',trib:'2° ACCONTO IRES'},
+  {cod:'INPS',anno:'2024',sog:'Artigiani e commercianti',trib:'ACCONTI E SALDI'},
+];
+
+let cartellinaState = {}; // bil_1..15, un_1..30
+
+function renderBilChecklist() {
+  const tbody = document.getElementById('bil-chk-tbody');
+  if(!tbody) return;
+  tbody.innerHTML = BIL_ITEMS.map((item, i) => {
+    const id = 'bil_'+item.n;
+    const done = cartellinaState[id];
+    const descLines = item.desc.split('\n');
+    const cmd = item.cmd ? item.cmd.split('\n').map(c=>`<span class="cartellina-cmd">${c}</span>`).join(' ') : '';
+    return `<tr class="${done?'cartellina-tr-done':''} ${i%2===1?'alt':''}">
+      <td class="cartellina-num">${item.n}</td>
+      <td class="desc-cell">${descLines.map((l,li) => `<span style="${li>0?'font-size:11.5px;color:#7a9ab8':''}${l.startsWith('⚠')?';color:var(--red);font-weight:600;font-size:12px':''}">${l}</span>`).join('<br>')}</td>
+      <td style="text-align:center;line-height:1.6">${cmd}</td>
+      <td class="cartellina-chk">
+        <input type="checkbox" ${done?'checked':''} onchange="toggleCartellina('${id}','bil')" style="width:15px;height:15px;accent-color:var(--accent);cursor:pointer">
+      </td>
+      <td><textarea class="cartellina-note-input" rows="1" placeholder="——" id="bn-${item.n}"></textarea></td>
+    </tr>`;
+  }).join('');
+  updateCartellinaPct('bil', 15);
+}
+
+function renderUnChecklist() {
+  const tbody = document.getElementById('un-chk-tbody');
+  if(!tbody) return;
+  tbody.innerHTML = UN_ITEMS.map((text, i) => {
+    const id = 'un_'+(i+1);
+    const done = cartellinaState[id];
+    return `<tr class="${done?'cartellina-tr-done':''} ${i%2===1?'alt':''}">
+      <td class="cartellina-num">${i+1}</td>
+      <td class="desc-cell">${text}</td>
+      <td class="cartellina-chk">
+        <input type="checkbox" ${done?'checked':''} onchange="toggleCartellina('${id}','un')" style="width:15px;height:15px;accent-color:var(--accent);cursor:pointer">
+      </td>
+      <td><textarea class="cartellina-note-input" rows="1" placeholder="——" id="un-note-${i+1}"></textarea></td>
+    </tr>`;
+  }).join('');
+  updateCartellinaPct('un', 30);
+}
+
+function renderUnF24() {
+  const tbody = document.getElementById('un-f24-tbody');
+  if(!tbody) return;
+  tbody.innerHTML = UN_F24.map((r, i) => `
+    <tr class="${i%2===1?'alt':''}">
+      <td style="font-weight:700;color:var(--accent);text-align:center">${r.cod}</td>
+      <td style="text-align:center">${r.anno}</td>
+      <td>${r.sog}</td>
+      <td>${r.trib}</td>
+      <td><input type="text" class="ci-input ci-input-wide" placeholder="€ ——" style="font-size:12px"></td>
+      <td style="text-align:center"><input type="checkbox" class="un-f24-chk" style="width:14px;height:14px;accent-color:var(--accent);cursor:pointer"></td>
+    </tr>
+  `).join('');
+}
+
+function toggleCartellina(id, key) {
+  cartellinaState[id] = !cartellinaState[id];
+  if(key==='bil') { renderBilChecklist(); updateDashboardStats(); }
+  else if(key==='un') { renderUnChecklist(); updateDashboardStats(); }
+}
+
+function updateCartellinaPct(key, total) {
+  const done = Object.keys(cartellinaState).filter(k=>k.startsWith(key+'_')&&cartellinaState[k]).length;
+  const pct = total ? Math.round(done/total*100) : 0;
+  const gp = document.getElementById('gp-'+( key==='bil'?'bilancio':'unico' ));
+  const gpp = document.getElementById('gp-'+( key==='bil'?'bilancio':'unico' )+'-pct');
+  if(gp) gp.style.width = pct+'%';
+  if(gpp) gpp.textContent = pct+'%';
+}
+
+function resetCartellina(key) {
+  const prefix = key+'_';
+  Object.keys(cartellinaState).forEach(k=>{ if(k.startsWith(prefix)) cartellinaState[k]=false; });
+  if(key==='bil') renderBilChecklist();
+  else if(key==='un') { renderUnChecklist(); renderUnF24(); }
+  updateDashboardStats();
+}
+
+// ═══════════════════════════════════════════════════════
+// TOPBAR: CLOCK + OPERATORE + STAMPA
+// ═══════════════════════════════════════════════════════
+function formatDateTimeIT() {
+  const now = new Date();
+  const giorni = ['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
+  const mesi = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+  const g = giorni[now.getDay()];
+  const d = String(now.getDate()).padStart(2,'0');
+  const m = mesi[now.getMonth()];
+  const y = now.getFullYear();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const ss = String(now.getSeconds()).padStart(2,'0');
+  return { full: `${g} ${d} ${m} ${y}  —  ${hh}:${mm}:${ss}`, short: `${d}/${String(now.getMonth()+1).padStart(2,'0')}/${y} ${hh}:${mm}:${ss}` };
+}
+
+function startClock() {
+  function tick() {
+    const dt = formatDateTimeIT();
+    const el = document.getElementById('topbar-datetime');
+    if(el) el.textContent = dt.full;
+    const pb = document.getElementById('print-datetime-bar');
+    if(pb) pb.textContent = dt.short;
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+
+function updatePrintOperatore() {
+  const val = (document.getElementById('operatore-input')||{}).value || '——';
+  const el = document.getElementById('print-operatore');
+  if(el) el.textContent = val || '——';
+}
+
+function doPrint() {
+  updatePrintOperatore();
+  const dt = formatDateTimeIT();
+  const pb = document.getElementById('print-datetime-bar');
+  if(pb) pb.textContent = 'Stampato il ' + dt.short;
+  window.print();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
+</script>
+</body>
+</html>
